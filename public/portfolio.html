@@ -54,7 +54,7 @@
     </div>
   </div>
 
-  <!-- CHAPTER DETAIL VIEW (single image viewer) -->
+  <!-- CHAPTER DETAIL VIEW -->
   <div id="chapter-view" class="hidden">
     <header id="chapter-header">
       <button id="back-btn" onclick="showChapters()">&#8592; PORTFOLIO</button>
@@ -62,6 +62,11 @@
     </header>
 
     <div id="image-viewer">
+      <!-- Blurred colour background -->
+      <div id="viewer-blur-bg">
+        <img id="viewer-blur-img" src="" alt="" />
+      </div>
+
       <button id="prev-btn" class="viewer-btn" aria-label="Previous">&#8592;</button>
       <div id="viewer-image-wrap">
         <img id="viewer-img" src="" alt="" />

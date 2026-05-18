@@ -12,41 +12,70 @@ async function loadChapters() {
   }
 }
 
+// ── Chapter grid with smart portrait / landscape grouping ─────────────────────
+// Every group of 3 chapters → 3-column portrait row
+// Leftover 1 or 2 chapters  → landscape stacked row
+// Pattern repeats infinitely as chapters are added
 function renderChapterGrid() {
   const grid   = document.getElementById('chapters-grid');
   const notice = document.getElementById('no-images-notice');
   grid.innerHTML = '';
 
-  const hasAnyImage = chapters.some(ch => ch.image_count > 0);
+  const visible = chapters.filter(ch => ch.image_count > 0);
 
-  if (!hasAnyImage) { notice.classList.remove('hidden'); return; }
+  if (!visible.length) { notice.classList.remove('hidden'); return; }
   notice.classList.add('hidden');
 
-  chapters.forEach(ch => {
-    if (!ch.image_count) return; // hide empty chapters on public side
-    const tile    = document.createElement('div');
-    tile.className = 'chapter-tile';
-    tile.onclick   = () => openChapter(ch.slug);
+  let i = 0;
+  while (i < visible.length) {
+    const remaining = visible.length - i;
 
-    // Chapter tile uses hero_image if set, otherwise falls back to lead_image
-    const coverImg = ch.hero_image || ch.lead_image;
-
-    if (coverImg) {
-      const src = coverImg.filename.startsWith('http') ? coverImg.filename : '/' + coverImg.filename;
-      tile.innerHTML = `
-        <img src="${src}" alt="${ch.name}" loading="lazy" />
-        <div class="chapter-tile-overlay"></div>
-        <span class="chapter-tile-label">${ch.name}</span>
-        <span class="chapter-tile-count">${ch.image_count} ${ch.image_count === 1 ? 'IMAGE' : 'IMAGES'}</span>
-      `;
+    if (remaining >= 3) {
+      // Portrait trio
+      const row = document.createElement('div');
+      row.className = 'chapter-row-portrait';
+      for (let j = 0; j < 3; j++) {
+        row.appendChild(createTile(visible[i + j]));
+      }
+      grid.appendChild(row);
+      i += 3;
     } else {
-      tile.innerHTML = `<div class="chapter-empty">${ch.name}</div>`;
+      // Landscape (1 or 2 remaining)
+      const row = document.createElement('div');
+      row.className = 'chapter-row-landscape';
+      for (let j = 0; j < remaining; j++) {
+        row.appendChild(createTile(visible[i + j]));
+      }
+      grid.appendChild(row);
+      i += remaining;
     }
-
-    grid.appendChild(tile);
-  });
+  }
 }
 
+function createTile(ch) {
+  const tile     = document.createElement('div');
+  tile.className = 'chapter-tile';
+  tile.onclick   = () => openChapter(ch.slug);
+
+  // Use designated cover, fall back to lead image
+  const coverImg = ch.hero_image || ch.lead_image;
+
+  if (coverImg) {
+    const src = coverImg.filename.startsWith('http') ? coverImg.filename : '/' + coverImg.filename;
+    tile.innerHTML = `
+      <img src="${src}" alt="${ch.name}" loading="lazy" />
+      <div class="chapter-tile-overlay"></div>
+      <span class="chapter-tile-label">${ch.name}</span>
+      <span class="chapter-tile-count">${ch.image_count} ${ch.image_count === 1 ? 'IMAGE' : 'IMAGES'}</span>
+    `;
+  } else {
+    tile.innerHTML = `<div class="chapter-empty">${ch.name}</div>`;
+  }
+
+  return tile;
+}
+
+// ── Open chapter ──────────────────────────────────────────────────────────────
 async function openChapter(slug) {
   try {
     const res  = await fetch(`/api/chapters/${slug}`);
@@ -56,7 +85,6 @@ async function openChapter(slug) {
     currentChapter = data;
     currentIndex   = 0;
 
-    // If chapter has a designated sub-hero, show intro screen first
     if (data.hero_image) {
       showChapterIntro(data);
     } else {
@@ -67,21 +95,16 @@ async function openChapter(slug) {
   }
 }
 
-// ── Chapter intro screen (sub-hero) ──────────────────────────────────────────
+// ── Chapter intro screen ──────────────────────────────────────────────────────
 function showChapterIntro(data) {
-  const intro = document.getElementById('chapter-intro');
-  const img   = document.getElementById('chapter-intro-img');
-  const title = document.getElementById('chapter-intro-title');
-
   const src = data.hero_image.filename.startsWith('http')
     ? data.hero_image.filename
     : '/' + data.hero_image.filename;
 
-  img.src   = src;
-  title.textContent = data.name;
-
+  document.getElementById('chapter-intro-img').src = src;
+  document.getElementById('chapter-intro-title').textContent = data.name;
   document.getElementById('chapters-view').classList.add('hidden');
-  intro.classList.remove('hidden');
+  document.getElementById('chapter-intro').classList.remove('hidden');
 }
 
 function enterChapterImages() {
@@ -94,20 +117,6 @@ function enterChapterImages() {
 
 document.getElementById('chapter-intro-enter').addEventListener('click', enterChapterImages);
 
-// Also allow any keypress on the intro screen to enter
-document.addEventListener('keydown', e => {
-  const intro = document.getElementById('chapter-intro');
-  if (!intro.classList.contains('hidden')) {
-    enterChapterImages();
-    return;
-  }
-
-  if (!currentChapter) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showImage(currentIndex + 1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showImage(currentIndex - 1);
-  if (e.key === 'Escape') showChapters();
-});
-
 // ── Image viewer ──────────────────────────────────────────────────────────────
 function showImage(index) {
   if (!currentChapter) return;
@@ -116,17 +125,18 @@ function showImage(index) {
 
   currentIndex = (index + images.length) % images.length;
   const img    = images[currentIndex];
+  const src    = img.filename.startsWith('http') ? img.filename : '/' + img.filename;
 
+  // Sharp foreground image
   const viewerImg = document.getElementById('viewer-img');
-  const src = img.filename.startsWith('http') ? img.filename : '/' + img.filename;
-  viewerImg.src = src;
-  viewerImg.alt = currentChapter.name;
+  viewerImg.src   = src;
+  viewerImg.alt   = currentChapter.name;
 
-  document.getElementById('viewer-caption').textContent =
-    `${currentChapter.name} · FALKOR`;
+  // Blurred background — same image, styled to bleed colour
+  document.getElementById('viewer-blur-img').src = src;
 
-  document.getElementById('viewer-counter').textContent =
-    `${currentIndex + 1} / ${images.length}`;
+  document.getElementById('viewer-caption').textContent = `${currentChapter.name} · FALKOR`;
+  document.getElementById('viewer-counter').textContent = `${currentIndex + 1} / ${images.length}`;
 }
 
 function showChapters() {
@@ -136,11 +146,21 @@ function showChapters() {
   document.getElementById('chapters-view').classList.remove('hidden');
 }
 
-// Button clicks
+// ── Keyboard ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  const intro = document.getElementById('chapter-intro');
+  if (!intro.classList.contains('hidden')) { enterChapterImages(); return; }
+  if (!currentChapter) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showImage(currentIndex + 1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showImage(currentIndex - 1);
+  if (e.key === 'Escape') showChapters();
+});
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
 document.getElementById('next-btn').addEventListener('click', () => showImage(currentIndex + 1));
 document.getElementById('prev-btn').addEventListener('click', () => showImage(currentIndex - 1));
 
-// Touch/swipe
+// ── Swipe ─────────────────────────────────────────────────────────────────────
 let touchStartX = 0;
 document.getElementById('image-viewer').addEventListener('touchstart', e => {
   touchStartX = e.changedTouches[0].screenX;
