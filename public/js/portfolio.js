@@ -116,12 +116,14 @@ function showChapterIntro(data) {
   document.getElementById('chapter-intro-img').src   = imgSrc(data.hero_image.filename);
   document.getElementById('chapter-intro-title').textContent = data.name;
   document.getElementById('chapters-carousel-view').classList.add('hidden');
+  document.getElementById('nav').classList.add('hidden');
   document.getElementById('chapter-intro').classList.remove('hidden');
 }
 
 function enterChapterImages() {
   document.getElementById('chapter-intro').classList.add('hidden');
   document.getElementById('chapters-carousel-view').classList.add('hidden');
+  document.getElementById('nav').classList.add('hidden');
   showImageGrid(currentChapter);
 }
 
@@ -186,6 +188,7 @@ function showChapters() {
   document.getElementById('chapter-view').classList.add('hidden');
   document.getElementById('chapter-grid-view').classList.add('hidden');
   document.getElementById('chapters-carousel-view').classList.remove('hidden');
+  document.getElementById('nav').classList.remove('hidden');
 
   // Re-centre on the chapter the user came from
   if (carouselActiveSlug && swiperInstance) {
