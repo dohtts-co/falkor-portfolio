@@ -2,21 +2,17 @@ const fs   = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-// ── Path ─────────────────────────────────────────────────────────────────────
-// Locally:      DATA_PATH is unset  →  ./data.json (next to server.js)
-// On Railway:   DATA_PATH=/data/data.json  →  persistent volume mount
+// ── Path ──────────────────────────────────────────────────────────────────────
 const DB_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
-
-// Ensure the directory exists (important when pointing at a Railway volume)
-const dbDir = path.dirname(DB_PATH);
+const dbDir   = path.dirname(DB_PATH);
 if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
 const DEFAULT_DATA = {
   chapters: [
-    { id: 1, name: 'PORTRAIT', slug: 'portrait', sort_order: 0 },
-    { id: 2, name: 'STREETS',  slug: 'streets',  sort_order: 1 },
-    { id: 3, name: 'TOKYO',    slug: 'tokyo',    sort_order: 2 },
+    { id: 1, name: 'PORTRAIT', slug: 'portrait', sort_order: 0, chapter_hero_image_id: null },
+    { id: 2, name: 'STREETS',  slug: 'streets',  sort_order: 1, chapter_hero_image_id: null },
+    { id: 3, name: 'TOKYO',    slug: 'tokyo',    sort_order: 2, chapter_hero_image_id: null },
   ],
   images: [],
   settings: { hero_image_id: null },
@@ -25,7 +21,8 @@ const DEFAULT_DATA = {
     username: 'dom',
     password_hash: bcrypt.hashSync('falkor2026', 10),
   },
-  _next_image_id: 1,
+  _next_image_id:   1,
+  _next_chapter_id: 4,
 };
 
 let data;
@@ -34,12 +31,31 @@ function load() {
   if (fs.existsSync(DB_PATH)) {
     try {
       data = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
+      migrate();
       return;
     } catch (e) {
-      console.error('[db] Failed to parse data file, falling back to defaults:', e.message);
+      console.error('[db] Failed to parse data file, using defaults:', e.message);
     }
   }
-  data = JSON.parse(JSON.stringify(DEFAULT_DATA)); // deep clone
+  data = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  save();
+}
+
+// Forward-compatible migrations — safe to run on every load
+function migrate() {
+  // Add _next_chapter_id if missing (older data.json)
+  if (!data._next_chapter_id) {
+    const maxId = data.chapters.length ? Math.max(...data.chapters.map(c => c.id)) : 0;
+    data._next_chapter_id = maxId + 1;
+  }
+  // Add chapter_hero_image_id to existing chapters that don't have it
+  data.chapters.forEach(ch => {
+    if (ch.chapter_hero_image_id === undefined) ch.chapter_hero_image_id = null;
+  });
+  // Add cloudinary_public_id to existing images that don't have it
+  data.images.forEach(img => {
+    if (img.cloudinary_public_id === undefined) img.cloudinary_public_id = null;
+  });
   save();
 }
 
@@ -61,6 +77,38 @@ const db = {
     return data.chapters.find(c => c.slug === slug) || null;
   },
 
+  getChapterById(id) {
+    return data.chapters.find(c => c.id === id) || null;
+  },
+
+  insertChapter({ name, slug, sort_order }) {
+    const id = data._next_chapter_id++;
+    const chapter = { id, name, slug, sort_order: sort_order ?? data.chapters.length, chapter_hero_image_id: null };
+    data.chapters.push(chapter);
+    save();
+    return chapter;
+  },
+
+  updateChapter(id, fields) {
+    const idx = data.chapters.findIndex(c => c.id === id);
+    if (idx === -1) return null;
+    data.chapters[idx] = { ...data.chapters[idx], ...fields };
+    save();
+    return data.chapters[idx];
+  },
+
+  deleteChapter(id) {
+    const idx = data.chapters.findIndex(c => c.id === id);
+    if (idx === -1) return false;
+    data.chapters.splice(idx, 1);
+    // Unassign all images that belonged to this chapter
+    data.images.forEach(img => {
+      if (img.chapter_id === id) img.chapter_id = null;
+    });
+    save();
+    return true;
+  },
+
   // ── Images ────────────────────────────────────────────────────────────────
   getImages() {
     return [...data.images].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -76,8 +124,6 @@ const db = {
     return data.images.find(i => i.id === id) || null;
   },
 
-  // cloudinary_public_id is stored when the image lives on Cloudinary;
-  // null for pre-loaded local photos and local-disk uploads.
   insertImage({ filename, cloudinary_public_id = null, original_name, chapter_id, sort_order }) {
     const id = data._next_image_id++;
     const image = {
@@ -85,9 +131,9 @@ const db = {
       filename,
       cloudinary_public_id,
       original_name: original_name || filename,
-      chapter_id: chapter_id || null,
-      sort_order: sort_order ?? 0,
-      created_at: new Date().toISOString(),
+      chapter_id:    chapter_id || null,
+      sort_order:    sort_order ?? 0,
+      created_at:    new Date().toISOString(),
     };
     data.images.push(image);
     save();
@@ -105,6 +151,10 @@ const db = {
   deleteImage(id) {
     const idx = data.images.findIndex(i => i.id === id);
     if (idx === -1) return false;
+    // Clear chapter hero if this image was it
+    data.chapters.forEach(ch => {
+      if (ch.chapter_hero_image_id === id) ch.chapter_hero_image_id = null;
+    });
     data.images.splice(idx, 1);
     if (data.settings.hero_image_id === id) data.settings.hero_image_id = null;
     save();
@@ -118,24 +168,12 @@ const db = {
   },
 
   // ── Settings ──────────────────────────────────────────────────────────────
-  getHeroImageId() {
-    return data.settings.hero_image_id;
-  },
-
-  setHeroImageId(id) {
-    data.settings.hero_image_id = id;
-    save();
-  },
+  getHeroImageId() { return data.settings.hero_image_id; },
+  setHeroImageId(id) { data.settings.hero_image_id = id; save(); },
 
   // ── Admin ─────────────────────────────────────────────────────────────────
-  getAdmin() {
-    return { ...data.admin };
-  },
-
-  updateAdminPassword(hash) {
-    data.admin.password_hash = hash;
-    save();
-  },
+  getAdmin() { return { ...data.admin }; },
+  updateAdminPassword(hash) { data.admin.password_hash = hash; save(); },
 };
 
 module.exports = db;

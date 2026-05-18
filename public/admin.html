@@ -37,9 +37,10 @@
     <header class="admin-header">
       <span class="admin-header-title">FALKOR · ADMIN</span>
       <div class="admin-header-actions">
-        <button class="admin-tab-btn active" data-tab="upload" onclick="switchTab('upload', this)">UPLOAD</button>
-        <button class="admin-tab-btn" data-tab="manage" onclick="switchTab('manage', this)">MANAGE</button>
-        <button class="admin-tab-btn" data-tab="settings" onclick="switchTab('settings', this)">SETTINGS</button>
+        <button class="admin-tab-btn active" data-tab="upload"   onclick="switchTab('upload', this)">UPLOAD</button>
+        <button class="admin-tab-btn"        data-tab="manage"   onclick="switchTab('manage', this)">MANAGE</button>
+        <button class="admin-tab-btn"        data-tab="chapters" onclick="switchTab('chapters', this)">CHAPTERS</button>
+        <button class="admin-tab-btn"        data-tab="settings" onclick="switchTab('settings', this)">SETTINGS</button>
         <button class="admin-logout-btn" onclick="logout()">LOG OUT</button>
       </div>
     </header>
@@ -76,15 +77,29 @@
 
     <!-- MANAGE TAB -->
     <div id="tab-manage" class="admin-tab hidden">
-      <div class="manage-filters">
-        <label class="admin-label">FILTER BY CHAPTER</label>
-        <select id="filter-chapter" class="admin-select" onchange="renderImages()">
-          <option value="">ALL IMAGES</option>
-        </select>
-      </div>
-
       <div id="manage-grid"></div>
       <p id="no-images-msg" class="admin-empty hidden">NO IMAGES UPLOADED YET.</p>
+    </div>
+
+    <!-- CHAPTERS TAB -->
+    <div id="tab-chapters" class="admin-tab hidden">
+      <div class="chapter-manager">
+
+        <div class="chapter-create">
+          <h2 class="settings-heading">CREATE CHAPTER</h2>
+          <div class="chapter-create-row">
+            <input type="text" id="new-chapter-name" class="admin-input chapter-name-input" placeholder="CHAPTER NAME (E.G. PICKLES)" />
+            <button class="admin-action-btn chapter-create-btn" onclick="createChapter()">CREATE</button>
+          </div>
+          <p id="chapter-create-msg" class="admin-status hidden"></p>
+        </div>
+
+        <div class="chapter-list-section">
+          <h2 class="settings-heading">ALL CHAPTERS</h2>
+          <div id="chapter-list"></div>
+        </div>
+
+      </div>
     </div>
 
     <!-- SETTINGS TAB -->
@@ -120,17 +135,15 @@
 
   </div>
 
-  <!-- IMAGE EDIT MODAL -->
+  <!-- IMAGE EDIT MODAL (kept for compatibility) -->
   <div id="image-modal" class="modal-overlay hidden" onclick="closeModal(event)">
     <div class="modal-box">
       <img id="modal-img" src="" alt="" />
       <div class="modal-controls">
         <label class="admin-label">CHAPTER</label>
         <select id="modal-chapter" class="admin-select"></select>
-
         <label class="admin-label" style="margin-top:16px">ORDER WITHIN CHAPTER</label>
         <input type="number" id="modal-order" class="admin-input" min="0" />
-
         <div class="modal-actions">
           <button class="admin-action-btn" onclick="saveImageEdit()">SAVE</button>
           <button class="admin-danger-btn" onclick="deleteImage()">DELETE</button>

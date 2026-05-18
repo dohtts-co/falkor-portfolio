@@ -27,7 +27,10 @@
       "Bash(node -e \"process.stdin.resume\\(\\);let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>console.log\\('API OK, chapters:',JSON.parse\\(d\\).length\\)\\)\")",
       "Bash(Get-Process -Name node -ErrorAction SilentlyContinue)",
       "Bash(Stop-Process -Force)",
-      "Bash(pkill -f \"server.js\")"
+      "Bash(pkill -f \"server.js\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }

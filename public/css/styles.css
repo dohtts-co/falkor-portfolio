@@ -457,6 +457,73 @@ input, textarea, select { font-family: var(--font); }
   color: var(--white-30);
 }
 
+/* ─── CHAPTER INTRO (sub-hero) ─────────────────────────────── */
+#chapter-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#chapter-intro-bg-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+#chapter-intro-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+#chapter-intro-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+#chapter-intro-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+#chapter-intro-label {
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.45em;
+  color: rgba(255,255,255,0.5);
+}
+
+#chapter-intro-title {
+  font-size: 18px;
+  font-weight: 200;
+  letter-spacing: 0.5em;
+  color: var(--white);
+}
+
+#chapter-intro-enter {
+  margin-top: 24px;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.45em;
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.35);
+  padding: 12px 32px;
+  transition: border-color 0.2s;
+}
+
+#chapter-intro-enter:hover { border-color: var(--white); }
+
 /* ─── ABOUT PAGE ───────────────────────────────────────────── */
 .about-main {
   min-height: 100vh;

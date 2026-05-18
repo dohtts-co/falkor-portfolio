@@ -420,6 +420,23 @@
   align-items: flex-end;
 }
 
+/* Hero & cover toggle buttons share the same base style */
+.mc-cover {
+  font-size: 8px;
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mc-cover:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+.mc-cover.active { color: #7ecfff; border-color: rgba(100,180,255,0.5); }
+
 /* Hero toggle */
 .mc-hero {
   font-size: 8px;
@@ -603,10 +620,118 @@
   border-color: rgba(255,100,100,0.7);
 }
 
+/* ─── CHAPTERS TAB ─────────────────────────────────────────── */
+.chapter-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  max-width: 700px;
+}
+
+.chapter-create-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.chapter-name-input {
+  flex: 1;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 8px 0;
+}
+
+.chapter-create-btn {
+  width: auto;
+  padding: 12px 28px;
+  margin-top: 0;
+  flex-shrink: 0;
+}
+
+.chapter-list-section { margin-top: 8px; }
+
+.chapter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-wrap: wrap;
+}
+
+.chapter-row-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+.chapter-row-thumb {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.chapter-row-no-cover {
+  background: #1a1a1a;
+  border: 1px dashed rgba(255,255,255,0.1);
+}
+
+.chapter-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chapter-row-name {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: #fff;
+}
+
+.chapter-row-slug {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,0.25);
+}
+
+.chapter-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chapter-rename-input {
+  width: 160px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 6px 0;
+}
+
+.chapter-rename-btn {
+  width: auto;
+  padding: 8px 18px;
+  font-size: 10px;
+  margin-top: 0;
+}
+
+.chapter-delete-btn {
+  width: auto;
+  padding: 8px 18px;
+  font-size: 10px;
+}
+
 @media (max-width: 640px) {
   .admin-header { padding: 12px 16px; }
   .admin-tab { padding: 24px 16px; }
   .modal-box { flex-direction: column; padding: 20px; }
   #modal-img { width: 100%; height: 200px; }
   .manage-section-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .chapter-row { flex-direction: column; align-items: flex-start; }
+  .chapter-rename-input { width: 100%; }
 }
