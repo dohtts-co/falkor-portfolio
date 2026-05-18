@@ -21,7 +21,7 @@ router.post('/contact', async (req, res) => {
 
     await resend.emails.send({
       from:    'FALKOR Contact <onboarding@resend.dev>',
-      to:      process.env.CONTACT_EMAIL || 'domarkezaq@gmail.com',
+      to:      process.env.CONTACT_EMAIL || 'falkorjp@gmail.com',
       replyTo: email,
       subject: `New enquiry from ${name}`,
       text:    `Name: ${name}\nEmail: ${email}\n\n${message}`,
