@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\simba\\\\Documents\\\\Dohtts\\\\Dom Portfolio\" -Recurse -Force)",
+      "Bash(Select-Object FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)",
+      "PowerShell($basePath = \"C:\\\\Users\\\\simba\\\\Documents\\\\Dohtts\\\\Dom Portfolio\"; function Show-Tree { param\\($Path, $Prefix = \"\"\\); $items = @\\(Get-ChildItem -Path $Path -Force | Sort-Object { $_.PSIsContainer }, $_.Name -Descending\\); foreach \\($item in $items\\) { $isLast = $item -eq $items[-1]; $current = if \\($isLast\\) { \"└── \" } else { \"├── \" }; $next = if \\($isLast\\) { \"    \" } else { \"│   \" }; if \\($item.PSIsContainer\\) { Write-Host \"$Prefix$current[DIR] $\\($item.Name\\)\"; Show-Tree $item.FullName \\($Prefix + $next\\) } else { Write-Host \"$Prefix$current$\\($item.Name\\)\" } } }; Write-Host \"C:\\\\Users\\\\simba\\\\Documents\\\\Dohtts\\\\Dom Portfolio\"; Show-Tree $basePath)",
+      "Bash(npm install *)",
+      "Bash(node server.js)",
+      "Bash(Start-Sleep -Seconds 2)",
+      "Bash(Get-Content \"C:\\\\Users\\\\simba\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-simba-Documents-Dohtts-Dom-Portfolio\\\\6a91ce65-fc2b-4353-b498-a60eb69fbb40\\\\tasks\\\\bs625tmax.output\" -ErrorAction SilentlyContinue)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \" %{http_code}\" http://localhost:3000/api/chapters)",
+      "Bash(curl -s -o /dev/null -w \" %{http_code}\" http://localhost:3000/admin.html)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/admin.html)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/photos/highlight%20picture.jpg\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\simba\\\\Documents\\\\Dohtts\\\\Dom Portfolio\\\\photos\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(curl -s http://localhost:3000/api/chapters)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); j.forEach\\(c=>console.log\\(c.name, c.image_count\\)\\)\")",
+      "PowerShell(Get-Process -Name node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "Bash(curl -s \"http://localhost:3000/api/chapters/portrait\")",
+      "Bash(node -e \"process.stdin.resume\\(\\);let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const j=JSON.parse\\(d\\);console.log\\('images:',j.images.length\\);j.images.forEach\\(i=>console.log\\(i.id,i.filename\\)\\)}\\)\")",
+      "Bash(node -e \"require\\('dotenv'\\).config\\(\\); require\\('./server.js'\\)\")",
+      "Bash(node -e \"process.stdin.resume\\(\\);let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>console.log\\('API OK, chapters:',JSON.parse\\(d\\).length\\)\\)\")",
+      "Bash(Get-Process -Name node -ErrorAction SilentlyContinue)",
+      "Bash(Stop-Process -Force)",
+      "Bash(pkill -f \"server.js\")"
+    ]
+  }
+}

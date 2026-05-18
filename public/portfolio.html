@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PORTFOLIO — FALKOR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="inner-page">
+
+  <nav id="nav">
+    <a href="/" class="nav-logo">FALKOR</a>
+    <div class="nav-separator">·</div>
+    <div class="nav-links">
+      <a href="/portfolio.html" class="nav-link active">PORTFOLIO</a>
+      <span class="nav-dot">·</span>
+      <a href="/about.html" class="nav-link">ABOUT</a>
+      <span class="nav-dot">·</span>
+      <a href="/contact.html" class="nav-link">CONTACT</a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+  </nav>
+
+  <div id="mobile-nav" class="hidden">
+    <button id="mobile-nav-close">&#10005;</button>
+    <div class="mobile-nav-links">
+      <a href="/portfolio.html">PORTFOLIO</a>
+      <a href="/about.html">ABOUT</a>
+      <a href="/contact.html">CONTACT</a>
+    </div>
+  </div>
+
+  <!-- CHAPTER GRID VIEW -->
+  <main id="chapters-view">
+    <div id="chapters-grid"></div>
+    <div id="no-images-notice" class="hidden">
+      <p>NO IMAGES UPLOADED YET.<br>LOG IN AS ADMIN TO ADD PHOTOGRAPHS.</p>
+    </div>
+  </main>
+
+  <!-- CHAPTER DETAIL VIEW (single image viewer) -->
+  <div id="chapter-view" class="hidden">
+    <header id="chapter-header">
+      <button id="back-btn" onclick="showChapters()">&#8592; PORTFOLIO</button>
+      <span id="chapter-title"></span>
+    </header>
+
+    <div id="image-viewer">
+      <button id="prev-btn" class="viewer-btn" aria-label="Previous">&#8592;</button>
+      <div id="viewer-image-wrap">
+        <img id="viewer-img" src="" alt="" />
+        <p id="viewer-caption"></p>
+      </div>
+      <button id="next-btn" class="viewer-btn" aria-label="Next">&#8594;</button>
+    </div>
+
+    <div id="viewer-counter"></div>
+  </div>
+
+  <footer id="footer">
+    <span class="footer-text">FALKOR · TOKYO · 2026</span>
+    <a href="/admin.html" class="admin-link">ADMIN</a>
+  </footer>
+
+  <script src="/js/portfolio.js"></script>
+  <script>
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.remove('hidden');
+    });
+    document.getElementById('mobile-nav-close').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

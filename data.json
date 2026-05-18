@@ -1,0 +1,529 @@
+{
+  "chapters": [
+    {
+      "id": 1,
+      "name": "PORTRAIT",
+      "slug": "portrait",
+      "sort_order": 0
+    },
+    {
+      "id": 2,
+      "name": "STREETS",
+      "slug": "streets",
+      "sort_order": 1
+    },
+    {
+      "id": 3,
+      "name": "TOKYO",
+      "slug": "tokyo",
+      "sort_order": 2
+    }
+  ],
+  "images": [
+    {
+      "id": 1,
+      "filename": "photos/highlight picture.jpg",
+      "original_name": "highlight picture.jpg",
+      "chapter_id": null,
+      "sort_order": 0,
+      "created_at": "2026-05-18T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "filename": "photos/portrait/portrait highlight photo.jpg",
+      "original_name": "portrait highlight photo.jpg",
+      "chapter_id": 1,
+      "sort_order": 0,
+      "created_at": "2026-05-18T00:00:01.000Z"
+    },
+    {
+      "id": 3,
+      "filename": "photos/portrait/portait 1.jpg",
+      "original_name": "portait 1.jpg",
+      "chapter_id": 1,
+      "sort_order": 1,
+      "created_at": "2026-05-18T00:00:02.000Z"
+    },
+    {
+      "id": 4,
+      "filename": "photos/portrait/portait 2a.jpg",
+      "original_name": "portait 2a.jpg",
+      "chapter_id": 1,
+      "sort_order": 2,
+      "created_at": "2026-05-18T00:00:03.000Z"
+    },
+    {
+      "id": 5,
+      "filename": "photos/portrait/portait 2b.jpg",
+      "original_name": "portait 2b.jpg",
+      "chapter_id": 1,
+      "sort_order": 3,
+      "created_at": "2026-05-18T00:00:04.000Z"
+    },
+    {
+      "id": 6,
+      "filename": "photos/portrait/portait 2c.jpg",
+      "original_name": "portait 2c.jpg",
+      "chapter_id": 1,
+      "sort_order": 4,
+      "created_at": "2026-05-18T00:00:05.000Z"
+    },
+    {
+      "id": 7,
+      "filename": "photos/portrait/portait 3a.jpg",
+      "original_name": "portait 3a.jpg",
+      "chapter_id": 1,
+      "sort_order": 5,
+      "created_at": "2026-05-18T00:00:06.000Z"
+    },
+    {
+      "id": 8,
+      "filename": "photos/portrait/portait 3b.jpg",
+      "original_name": "portait 3b.jpg",
+      "chapter_id": 1,
+      "sort_order": 6,
+      "created_at": "2026-05-18T00:00:07.000Z"
+    },
+    {
+      "id": 9,
+      "filename": "photos/portrait/portait 3c.jpg",
+      "original_name": "portait 3c.jpg",
+      "chapter_id": 1,
+      "sort_order": 7,
+      "created_at": "2026-05-18T00:00:08.000Z"
+    },
+    {
+      "id": 10,
+      "filename": "photos/portrait/portait 4a.jpg",
+      "original_name": "portait 4a.jpg",
+      "chapter_id": 1,
+      "sort_order": 8,
+      "created_at": "2026-05-18T00:00:09.000Z"
+    },
+    {
+      "id": 11,
+      "filename": "photos/portrait/portait  4b.jpg",
+      "original_name": "portait  4b.jpg",
+      "chapter_id": 1,
+      "sort_order": 9,
+      "created_at": "2026-05-18T00:00:10.000Z"
+    },
+    {
+      "id": 12,
+      "filename": "photos/portrait/portait 6a.jpg",
+      "original_name": "portait 6a.jpg",
+      "chapter_id": 1,
+      "sort_order": 10,
+      "created_at": "2026-05-18T00:00:11.000Z"
+    },
+    {
+      "id": 13,
+      "filename": "photos/portrait/portait 6b.jpg",
+      "original_name": "portait 6b.jpg",
+      "chapter_id": 1,
+      "sort_order": 11,
+      "created_at": "2026-05-18T00:00:12.000Z"
+    },
+    {
+      "id": 14,
+      "filename": "photos/portrait/portait 7a.jpg",
+      "original_name": "portait 7a.jpg",
+      "chapter_id": 1,
+      "sort_order": 12,
+      "created_at": "2026-05-18T00:00:13.000Z"
+    },
+    {
+      "id": 15,
+      "filename": "photos/portrait/portait 7b.jpg",
+      "original_name": "portait 7b.jpg",
+      "chapter_id": 1,
+      "sort_order": 13,
+      "created_at": "2026-05-18T00:00:14.000Z"
+    },
+    {
+      "id": 16,
+      "filename": "photos/portrait/portait 8a.jpg",
+      "original_name": "portait 8a.jpg",
+      "chapter_id": 1,
+      "sort_order": 14,
+      "created_at": "2026-05-18T00:00:15.000Z"
+    },
+    {
+      "id": 18,
+      "filename": "photos/people in street/street highlight photo.jpg",
+      "original_name": "street highlight photo.jpg",
+      "chapter_id": 2,
+      "sort_order": 0,
+      "created_at": "2026-05-18T00:00:17.000Z"
+    },
+    {
+      "id": 19,
+      "filename": "photos/people in street/1-IMG_5262.jpg",
+      "original_name": "1-IMG_5262.jpg",
+      "chapter_id": 2,
+      "sort_order": 1,
+      "created_at": "2026-05-18T00:00:18.000Z"
+    },
+    {
+      "id": 20,
+      "filename": "photos/people in street/2-IMG_5254.jpg",
+      "original_name": "2-IMG_5254.jpg",
+      "chapter_id": 2,
+      "sort_order": 2,
+      "created_at": "2026-05-18T00:00:19.000Z"
+    },
+    {
+      "id": 21,
+      "filename": "photos/people in street/3-IMG_5153.jpg",
+      "original_name": "3-IMG_5153.jpg",
+      "chapter_id": 2,
+      "sort_order": 3,
+      "created_at": "2026-05-18T00:00:20.000Z"
+    },
+    {
+      "id": 22,
+      "filename": "photos/people in street/4-IMG_5146.jpg",
+      "original_name": "4-IMG_5146.jpg",
+      "chapter_id": 2,
+      "sort_order": 4,
+      "created_at": "2026-05-18T00:00:21.000Z"
+    },
+    {
+      "id": 23,
+      "filename": "photos/people in street/5-IMG_5053.jpg",
+      "original_name": "5-IMG_5053.jpg",
+      "chapter_id": 2,
+      "sort_order": 5,
+      "created_at": "2026-05-18T00:00:22.000Z"
+    },
+    {
+      "id": 24,
+      "filename": "photos/people in street/6-IMG_5002.jpg",
+      "original_name": "6-IMG_5002.jpg",
+      "chapter_id": 2,
+      "sort_order": 6,
+      "created_at": "2026-05-18T00:00:23.000Z"
+    },
+    {
+      "id": 25,
+      "filename": "photos/people in street/7-IMG_4999.jpg",
+      "original_name": "7-IMG_4999.jpg",
+      "chapter_id": 2,
+      "sort_order": 7,
+      "created_at": "2026-05-18T00:00:24.000Z"
+    },
+    {
+      "id": 26,
+      "filename": "photos/people in street/8-IMG_4967.jpg",
+      "original_name": "8-IMG_4967.jpg",
+      "chapter_id": 2,
+      "sort_order": 8,
+      "created_at": "2026-05-18T00:00:25.000Z"
+    },
+    {
+      "id": 27,
+      "filename": "photos/people in street/17-IMG_4906.jpg",
+      "original_name": "17-IMG_4906.jpg",
+      "chapter_id": 2,
+      "sort_order": 9,
+      "created_at": "2026-05-18T00:00:26.000Z"
+    },
+    {
+      "id": 28,
+      "filename": "photos/people in street/18-IMG_4896.jpg",
+      "original_name": "18-IMG_4896.jpg",
+      "chapter_id": 2,
+      "sort_order": 10,
+      "created_at": "2026-05-18T00:00:27.000Z"
+    },
+    {
+      "id": 29,
+      "filename": "photos/people in street/20-IMG_4860.jpg",
+      "original_name": "20-IMG_4860.jpg",
+      "chapter_id": 2,
+      "sort_order": 11,
+      "created_at": "2026-05-18T00:00:28.000Z"
+    },
+    {
+      "id": 30,
+      "filename": "photos/people in street/21-IMG_4802.jpg",
+      "original_name": "21-IMG_4802.jpg",
+      "chapter_id": 2,
+      "sort_order": 12,
+      "created_at": "2026-05-18T00:00:29.000Z"
+    },
+    {
+      "id": 31,
+      "filename": "photos/people in street/22-IMG_4800.jpg",
+      "original_name": "22-IMG_4800.jpg",
+      "chapter_id": 2,
+      "sort_order": 13,
+      "created_at": "2026-05-18T00:00:30.000Z"
+    },
+    {
+      "id": 32,
+      "filename": "photos/people in street/23-IMG_4764.jpg",
+      "original_name": "23-IMG_4764.jpg",
+      "chapter_id": 2,
+      "sort_order": 14,
+      "created_at": "2026-05-18T00:00:31.000Z"
+    },
+    {
+      "id": 33,
+      "filename": "photos/people in street/28-IMG_4708.jpg",
+      "original_name": "28-IMG_4708.jpg",
+      "chapter_id": 2,
+      "sort_order": 15,
+      "created_at": "2026-05-18T00:00:32.000Z"
+    },
+    {
+      "id": 34,
+      "filename": "photos/people in street/29-IMG_4707.jpg",
+      "original_name": "29-IMG_4707.jpg",
+      "chapter_id": 2,
+      "sort_order": 16,
+      "created_at": "2026-05-18T00:00:33.000Z"
+    },
+    {
+      "id": 35,
+      "filename": "photos/people in street/31-IMG_4692.jpg",
+      "original_name": "31-IMG_4692.jpg",
+      "chapter_id": 2,
+      "sort_order": 17,
+      "created_at": "2026-05-18T00:00:34.000Z"
+    },
+    {
+      "id": 36,
+      "filename": "photos/people in street/33-IMG_4661.jpg",
+      "original_name": "33-IMG_4661.jpg",
+      "chapter_id": 2,
+      "sort_order": 18,
+      "created_at": "2026-05-18T00:00:35.000Z"
+    },
+    {
+      "id": 37,
+      "filename": "photos/people in street/34-IMG_4643.jpg",
+      "original_name": "34-IMG_4643.jpg",
+      "chapter_id": 2,
+      "sort_order": 19,
+      "created_at": "2026-05-18T00:00:36.000Z"
+    },
+    {
+      "id": 38,
+      "filename": "photos/people in street/35-IMG_4640.jpg",
+      "original_name": "35-IMG_4640.jpg",
+      "chapter_id": 2,
+      "sort_order": 20,
+      "created_at": "2026-05-18T00:00:37.000Z"
+    },
+    {
+      "id": 39,
+      "filename": "photos/people in street/36-IMG_4631.jpg",
+      "original_name": "36-IMG_4631.jpg",
+      "chapter_id": 2,
+      "sort_order": 21,
+      "created_at": "2026-05-18T00:00:38.000Z"
+    },
+    {
+      "id": 40,
+      "filename": "photos/people in street/37-IMG_4609.jpg",
+      "original_name": "37-IMG_4609.jpg",
+      "chapter_id": 2,
+      "sort_order": 22,
+      "created_at": "2026-05-18T00:00:39.000Z"
+    },
+    {
+      "id": 41,
+      "filename": "photos/people in street/38-IMG_4581.jpg",
+      "original_name": "38-IMG_4581.jpg",
+      "chapter_id": 2,
+      "sort_order": 23,
+      "created_at": "2026-05-18T00:00:40.000Z"
+    },
+    {
+      "id": 42,
+      "filename": "photos/people in street/39-IMG_4561.jpg",
+      "original_name": "39-IMG_4561.jpg",
+      "chapter_id": 2,
+      "sort_order": 24,
+      "created_at": "2026-05-18T00:00:41.000Z"
+    },
+    {
+      "id": 43,
+      "filename": "photos/people in street/40-IMG_4560.jpg",
+      "original_name": "40-IMG_4560.jpg",
+      "chapter_id": 2,
+      "sort_order": 25,
+      "created_at": "2026-05-18T00:00:42.000Z"
+    },
+    {
+      "id": 44,
+      "filename": "photos/people in street/41-IMG_4549.jpg",
+      "original_name": "41-IMG_4549.jpg",
+      "chapter_id": 2,
+      "sort_order": 26,
+      "created_at": "2026-05-18T00:00:43.000Z"
+    },
+    {
+      "id": 45,
+      "filename": "photos/people in street/42-IMG_4547.jpg",
+      "original_name": "42-IMG_4547.jpg",
+      "chapter_id": 2,
+      "sort_order": 27,
+      "created_at": "2026-05-18T00:00:44.000Z"
+    },
+    {
+      "id": 46,
+      "filename": "photos/people in street/43-IMG_4544.jpg",
+      "original_name": "43-IMG_4544.jpg",
+      "chapter_id": 2,
+      "sort_order": 28,
+      "created_at": "2026-05-18T00:00:45.000Z"
+    },
+    {
+      "id": 47,
+      "filename": "photos/people in street/45-IMG_4531.jpg",
+      "original_name": "45-IMG_4531.jpg",
+      "chapter_id": 2,
+      "sort_order": 29,
+      "created_at": "2026-05-18T00:00:46.000Z"
+    },
+    {
+      "id": 48,
+      "filename": "photos/people in street/49-IMG_4476.jpg",
+      "original_name": "49-IMG_4476.jpg",
+      "chapter_id": 2,
+      "sort_order": 30,
+      "created_at": "2026-05-18T00:00:47.000Z"
+    },
+    {
+      "id": 49,
+      "filename": "photos/people in street/57-IMG_4370.jpg",
+      "original_name": "57-IMG_4370.jpg",
+      "chapter_id": 2,
+      "sort_order": 31,
+      "created_at": "2026-05-18T00:00:48.000Z"
+    },
+    {
+      "id": 50,
+      "filename": "photos/tokyo highlight photo.jpg",
+      "original_name": "tokyo highlight photo.jpg",
+      "chapter_id": 3,
+      "sort_order": 0,
+      "created_at": "2026-05-18T00:00:49.000Z"
+    },
+    {
+      "id": 51,
+      "filename": "photos/19-IMG_4886.jpg",
+      "original_name": "19-IMG_4886.jpg",
+      "chapter_id": 3,
+      "sort_order": 1,
+      "created_at": "2026-05-18T00:00:50.000Z"
+    },
+    {
+      "id": 52,
+      "filename": "photos/30-IMG_4699.jpg",
+      "original_name": "30-IMG_4699.jpg",
+      "chapter_id": 3,
+      "sort_order": 2,
+      "created_at": "2026-05-18T00:00:51.000Z"
+    },
+    {
+      "id": 53,
+      "filename": "photos/32-IMG_4690.jpg",
+      "original_name": "32-IMG_4690.jpg",
+      "chapter_id": 3,
+      "sort_order": 3,
+      "created_at": "2026-05-18T00:00:52.000Z"
+    },
+    {
+      "id": 54,
+      "filename": "photos/46-IMG_4518.jpg",
+      "original_name": "46-IMG_4518.jpg",
+      "chapter_id": 3,
+      "sort_order": 4,
+      "created_at": "2026-05-18T00:00:53.000Z"
+    },
+    {
+      "id": 55,
+      "filename": "photos/58-IMG_4316.jpg",
+      "original_name": "58-IMG_4316.jpg",
+      "chapter_id": 3,
+      "sort_order": 5,
+      "created_at": "2026-05-18T00:00:54.000Z"
+    },
+    {
+      "id": 56,
+      "filename": "photos/59-IMG_4282.jpg",
+      "original_name": "59-IMG_4282.jpg",
+      "chapter_id": 3,
+      "sort_order": 6,
+      "created_at": "2026-05-18T00:00:55.000Z"
+    },
+    {
+      "id": 57,
+      "filename": "photos/60-IMG_4273.jpg",
+      "original_name": "60-IMG_4273.jpg",
+      "chapter_id": 3,
+      "sort_order": 7,
+      "created_at": "2026-05-18T00:00:56.000Z"
+    },
+    {
+      "id": 58,
+      "filename": "photos/61-IMG_4233.jpg",
+      "original_name": "61-IMG_4233.jpg",
+      "chapter_id": 3,
+      "sort_order": 8,
+      "created_at": "2026-05-18T00:00:57.000Z"
+    },
+    {
+      "id": 59,
+      "filename": "photos/62-20260426_175347.jpg",
+      "original_name": "62-20260426_175347.jpg",
+      "chapter_id": 3,
+      "sort_order": 9,
+      "created_at": "2026-05-18T00:00:58.000Z"
+    },
+    {
+      "id": 60,
+      "filename": "photos/car 1a.jpg",
+      "original_name": "car 1a.jpg",
+      "chapter_id": 3,
+      "sort_order": 10,
+      "created_at": "2026-05-18T00:00:59.000Z"
+    },
+    {
+      "id": 61,
+      "filename": "photos/car 1b.jpg",
+      "original_name": "car 1b.jpg",
+      "chapter_id": 3,
+      "sort_order": 11,
+      "created_at": "2026-05-18T00:01:00.000Z"
+    },
+    {
+      "id": 62,
+      "filename": "photos/car 1c.jpg",
+      "original_name": "car 1c.jpg",
+      "chapter_id": 3,
+      "sort_order": 12,
+      "created_at": "2026-05-18T00:01:01.000Z"
+    },
+    {
+      "id": 63,
+      "filename": "uploads/1779064231148-129614.jpg",
+      "original_name": "DSCF0482.JPG",
+      "chapter_id": 1,
+      "sort_order": 16,
+      "created_at": "2026-05-18T00:30:31.166Z"
+    }
+  ],
+  "settings": {
+    "hero_image_id": 63
+  },
+  "admin": {
+    "id": 1,
+    "username": "dom",
+    "password_hash": "$2a$10$dc.qIZpdZzFQ6JFCpKxBC.EmeB3kMlS4oofpHTMofCI6x/jQHzfEq"
+  },
+  "_next_image_id": 64
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FALKOR — PHOTOGRAPHER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="home-page">
+
+  <!-- ENTRY SCREEN -->
+  <div id="entry-screen">
+    <div id="hero-image-container">
+      <img id="hero-img" src="" alt="" />
+      <div id="hero-fallback"></div>
+    </div>
+
+    <div id="entry-text">
+      <p class="entry-name">FALKOR</p>
+      <p class="entry-role">PHOTOGRAPHER</p>
+      <p class="entry-tagline">DOCUMENTING THE QUIET LIVES OF TOKYO,<br>ONE FACE AT A TIME.</p>
+      <button id="enter-btn" onclick="enterSite()">ENTER</button>
+    </div>
+  </div>
+
+  <!-- MAIN SITE (hidden until ENTER clicked) -->
+  <div id="site" class="hidden">
+    <nav id="nav">
+      <a href="/" class="nav-logo">FALKOR</a>
+      <div class="nav-separator">·</div>
+      <div class="nav-links">
+        <a href="/portfolio.html" class="nav-link">PORTFOLIO</a>
+        <span class="nav-dot">·</span>
+        <a href="/about.html" class="nav-link">ABOUT</a>
+        <span class="nav-dot">·</span>
+        <a href="/contact.html" class="nav-link">CONTACT</a>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
+    </nav>
+
+    <!-- Mobile nav overlay -->
+    <div id="mobile-nav" class="hidden">
+      <button id="mobile-nav-close">&#10005;</button>
+      <div class="mobile-nav-links">
+        <a href="/portfolio.html">PORTFOLIO</a>
+        <a href="/about.html">ABOUT</a>
+        <a href="/contact.html">CONTACT</a>
+      </div>
+    </div>
+
+    <!-- Post-entry content: redirect to portfolio hint -->
+    <div id="home-content">
+      <div class="home-inner">
+        <p class="home-intro">WELCOME</p>
+        <a href="/portfolio.html" class="cta-link">VIEW PORTFOLIO &#8594;</a>
+      </div>
+    </div>
+
+    <footer id="footer">
+      <span class="footer-text">FALKOR · TOKYO · 2026</span>
+      <a href="/admin.html" class="admin-link">ADMIN</a>
+    </footer>
+  </div>
+
+  <script>
+    // Load hero image from API
+    fetch('/api/hero')
+      .then(r => r.json())
+      .then(image => {
+        if (image && image.filename) {
+          const img = document.getElementById('hero-img');
+          img.src = '/' + image.filename;
+          img.style.display = 'block';
+          document.getElementById('hero-fallback').style.display = 'none';
+        } else {
+          document.getElementById('hero-img').style.display = 'none';
+        }
+      })
+      .catch(() => {
+        document.getElementById('hero-img').style.display = 'none';
+      });
+
+    function enterSite() {
+      const entry = document.getElementById('entry-screen');
+      const site = document.getElementById('site');
+      entry.classList.add('fade-out');
+      setTimeout(() => {
+        entry.style.display = 'none';
+        site.classList.remove('hidden');
+        site.classList.add('fade-in');
+        sessionStorage.setItem('entered', '1');
+      }, 600);
+    }
+
+    // Skip entry if already entered this session
+    if (sessionStorage.getItem('entered')) {
+      document.getElementById('entry-screen').style.display = 'none';
+      document.getElementById('site').classList.remove('hidden');
+    }
+
+    // Hamburger
+    document.getElementById('hamburger').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.remove('hidden');
+    });
+    document.getElementById('mobile-nav-close').addEventListener('click', () => {
+      document.getElementById('mobile-nav').classList.add('hidden');
+    });
+  </script>
+</body>
+</html>

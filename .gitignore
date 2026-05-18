@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Local environment secrets — never commit
+.env
+
+# Admin-uploaded images (stored on Cloudinary in production)
+uploads/
+
+# Database file — production copy lives on Railway Volume, not in the repo
+# The repo's data.json is only used as a seed / local dev copy.
+# Remove the line below if you want to commit the initial seed data.
+# data.json

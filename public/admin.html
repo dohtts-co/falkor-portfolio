@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADMIN — FALKOR</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body class="admin-page">
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-box">
+      <a href="/portfolio.html" class="login-home-link">← BACK TO SITE</a>
+      <p class="login-title">FALKOR</p>
+      <p class="login-sub">ADMIN</p>
+      <form id="login-form" onsubmit="login(event)">
+        <div class="admin-field">
+          <input type="text" id="username" placeholder="USERNAME" autocomplete="username" />
+        </div>
+        <div class="admin-field">
+          <input type="password" id="password" placeholder="PASSWORD" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="admin-submit-btn">ENTER</button>
+        <p id="login-error" class="admin-error hidden"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="dashboard" class="hidden">
+
+    <header class="admin-header">
+      <span class="admin-header-title">FALKOR · ADMIN</span>
+      <div class="admin-header-actions">
+        <button class="admin-tab-btn active" data-tab="upload" onclick="switchTab('upload', this)">UPLOAD</button>
+        <button class="admin-tab-btn" data-tab="manage" onclick="switchTab('manage', this)">MANAGE</button>
+        <button class="admin-tab-btn" data-tab="settings" onclick="switchTab('settings', this)">SETTINGS</button>
+        <button class="admin-logout-btn" onclick="logout()">LOG OUT</button>
+      </div>
+    </header>
+
+    <!-- UPLOAD TAB -->
+    <div id="tab-upload" class="admin-tab">
+      <div class="upload-area" id="drop-zone">
+        <p class="upload-prompt">DRAG & DROP IMAGES HERE</p>
+        <p class="upload-or">OR</p>
+        <label class="upload-file-label">
+          SELECT FILES
+          <input type="file" id="file-input" accept="image/jpeg,image/jpg,image/png,image/webp" multiple hidden />
+        </label>
+        <p class="upload-hint">JPG · PNG · WEBP · MAX 30MB PER FILE</p>
+      </div>
+
+      <div class="upload-options">
+        <label class="admin-label">ASSIGN TO CHAPTER</label>
+        <select id="upload-chapter" class="admin-select">
+          <option value="">— UNASSIGNED —</option>
+        </select>
+      </div>
+
+      <div id="upload-preview-list"></div>
+
+      <button id="upload-btn" class="admin-action-btn hidden" onclick="uploadFiles()">
+        UPLOAD SELECTED IMAGES
+      </button>
+      <div id="upload-progress" class="hidden">
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <p id="progress-text"></p>
+      </div>
+    </div>
+
+    <!-- MANAGE TAB -->
+    <div id="tab-manage" class="admin-tab hidden">
+      <div class="manage-filters">
+        <label class="admin-label">FILTER BY CHAPTER</label>
+        <select id="filter-chapter" class="admin-select" onchange="renderImages()">
+          <option value="">ALL IMAGES</option>
+        </select>
+      </div>
+
+      <div id="manage-grid"></div>
+      <p id="no-images-msg" class="admin-empty hidden">NO IMAGES UPLOADED YET.</p>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="admin-tab hidden">
+      <div class="settings-section">
+        <h2 class="settings-heading">CHANGE PASSWORD</h2>
+        <form onsubmit="changePassword(event)">
+          <div class="admin-field">
+            <input type="password" id="curr-pass" placeholder="CURRENT PASSWORD" />
+          </div>
+          <div class="admin-field">
+            <input type="password" id="new-pass" placeholder="NEW PASSWORD (MIN 6 CHARS)" />
+          </div>
+          <button type="submit" class="admin-action-btn">UPDATE PASSWORD</button>
+          <p id="pass-msg" class="admin-status hidden"></p>
+        </form>
+      </div>
+
+      <div class="settings-section">
+        <h2 class="settings-heading">HERO IMAGE</h2>
+        <p class="settings-hint">SET THE HERO IMAGE FROM THE MANAGE TAB BY CLICKING THE STAR ON ANY IMAGE.</p>
+        <div id="hero-preview-wrap">
+          <p id="hero-none">NO HERO IMAGE SET.</p>
+          <img id="hero-preview-img" src="" alt="" class="hidden" />
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h2 class="settings-heading">SITE LINK</h2>
+        <a href="/" target="_blank" class="admin-site-link">VIEW LIVE SITE &#8594;</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IMAGE EDIT MODAL -->
+  <div id="image-modal" class="modal-overlay hidden" onclick="closeModal(event)">
+    <div class="modal-box">
+      <img id="modal-img" src="" alt="" />
+      <div class="modal-controls">
+        <label class="admin-label">CHAPTER</label>
+        <select id="modal-chapter" class="admin-select"></select>
+
+        <label class="admin-label" style="margin-top:16px">ORDER WITHIN CHAPTER</label>
+        <input type="number" id="modal-order" class="admin-input" min="0" />
+
+        <div class="modal-actions">
+          <button class="admin-action-btn" onclick="saveImageEdit()">SAVE</button>
+          <button class="admin-danger-btn" onclick="deleteImage()">DELETE</button>
+        </div>
+        <p id="modal-msg" class="admin-status hidden"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>FALKOR — PHOTOGRAPHER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #000;
+  --white: #fff;
+  --w60: rgba(255,255,255,.6);
+  --w40: rgba(255,255,255,.4);
+  --w30: rgba(255,255,255,.3);
+  --w15: rgba(255,255,255,.15);
+  --font: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+}
+
+html, body { height: 100%; background: var(--black); color: var(--white); font-family: var(--font); font-weight: 300; -webkit-font-smoothing: antialiased; overflow: hidden; }
+
+a { color: inherit; text-decoration: none; }
+button { background: none; border: none; cursor: pointer; font-family: var(--font); color: var(--white); }
+.hidden { display: none !important; }
+
+/* ── PAGES ─────────────────────────────────────────────────── */
+.page { position: fixed; inset: 0; background: var(--black); display: flex; flex-direction: column; overflow-y: auto; transition: opacity .4s; }
+.page.out { opacity: 0; pointer-events: none; }
+
+/* ── ENTRY ─────────────────────────────────────────────────── */
+#page-entry { align-items: center; justify-content: center; overflow: hidden; }
+
+#hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('photos/highlight%20picture.jpg');
+  background-size: cover; background-position: center;
+}
+
+#entry-text { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.entry-name  { font-size: 13px; font-weight: 300; letter-spacing: .35em; }
+.entry-role  { font-size: 11px; font-weight: 200; letter-spacing: .4em; color: var(--w60); }
+.entry-tag   { font-size: 11px; font-weight: 200; letter-spacing: .28em; line-height: 2; color: var(--w60); }
+#enter-btn   { margin-top: 28px; font-size: 11px; letter-spacing: .5em; color: var(--white); border: 1px solid var(--w40); padding: 13px 34px; transition: border-color .25s; }
+#enter-btn:hover { border-color: var(--white); }
+
+/* ── NAV ──────────────────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 14px;
+  padding: 22px 40px; background: linear-gradient(to bottom,rgba(0,0,0,.65) 0%,transparent 100%);
+  flex-shrink: 0;
+}
+.nav-logo { font-size: 13px; letter-spacing: .25em; }
+.nav-sep   { color: var(--w40); }
+.nav-links { display: flex; align-items: center; gap: 14px; }
+.nav-link  { font-size: 11px; letter-spacing: .25em; color: var(--w60); transition: color .2s; cursor: pointer; }
+.nav-link:hover, .nav-link.active { color: var(--white); }
+.nav-dot { color: var(--w30); font-size: 10px; }
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer {
+  position: sticky; bottom: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 40px; background: linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 100%);
+  flex-shrink: 0; margin-top: auto;
+}
+.footer-text { font-size: 10px; letter-spacing: .25em; color: var(--w30); }
+
+/* ── PORTFOLIO ────────────────────────────────────────────── */
+#page-portfolio { overflow-y: auto; }
+.chapters-grid { display: flex; flex-direction: row; gap: 3px; padding-bottom: 80px; align-items: stretch; }
+
+.chapter-tile {
+  position: relative; flex: 1; aspect-ratio: 2/3;
+  overflow: hidden; cursor: pointer; background: #0a0a0a;
+}
+.chapter-tile img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform .8s cubic-bezier(.25,.46,.45,.94), filter .6s ease;
+}
+.chapter-tile:hover img {
+  transform: scale(1.06);
+  filter: brightness(0.75) saturate(1.2);
+}
+.chapter-tile-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.7) 0%, rgba(0,0,0,0) 50%);
+  transition: opacity .4s ease;
+}
+.chapter-tile:hover .chapter-tile-overlay { opacity: 1.3; }
+
+.chapter-tile-label {
+  position: absolute; bottom: 26px; left: 34px;
+  font-size: 14px; letter-spacing: .3em;
+  transform: translateY(4px);
+  transition: transform .4s ease, letter-spacing .4s ease;
+}
+.chapter-tile:hover .chapter-tile-label {
+  transform: translateY(0);
+  letter-spacing: .45em;
+}
+.chapter-tile-count {
+  position: absolute; bottom: 26px; right: 34px;
+  font-size: 10px; letter-spacing: .2em; color: var(--w40);
+  opacity: 0; transform: translateX(6px);
+  transition: opacity .4s ease, transform .4s ease;
+}
+.chapter-tile:hover .chapter-tile-count {
+  opacity: 1; transform: translateX(0);
+}
+.chapter-tile-line {
+  position: absolute; bottom: 0; left: 0;
+  height: 1px; width: 0; background: rgba(255,255,255,.3);
+  transition: width .6s cubic-bezier(.25,.46,.45,.94);
+}
+.chapter-tile:hover .chapter-tile-line { width: 100%; }
+
+/* ── VIEWER ───────────────────────────────────────────────── */
+#page-viewer { overflow: hidden; }
+
+#viewer-blur-bg {
+  position: absolute; inset: -40px; z-index: 0;
+  background-size: cover; background-position: center;
+  filter: blur(40px) brightness(0.35) saturate(1.4);
+  transform: scale(1.1);
+  transition: background-image 0.5s ease, opacity 0.5s ease;
+}
+
+#viewer-header {
+  position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 40px; background: linear-gradient(to bottom,rgba(0,0,0,.5) 0%,transparent 100%);
+}
+#back-btn { font-size: 11px; letter-spacing: .25em; color: var(--w60); transition: color .2s; }
+#back-btn:hover { color: var(--white); }
+#viewer-chapter-name { font-size: 11px; letter-spacing: .3em; color: var(--w60); }
+#image-viewer { flex: 1; display: flex; align-items: center; justify-content: center; height: 100vh; position: relative; }
+#viewer-wrap { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 80px 80px; max-height: 100vh; }
+#viewer-img { max-height: calc(100vh - 160px); max-width: 100%; object-fit: contain; transition: opacity 0.3s ease; }
+#viewer-caption { font-size: 10px; letter-spacing: .25em; color: var(--w40); }
+.vbtn { position: absolute; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--w40); padding: 20px; transition: color .2s; z-index: 3; }
+.vbtn:hover { color: var(--white); }
+#vprev { left: 16px; } #vnext { right: 16px; }
+#vcounter { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); font-size: 10px; letter-spacing: .25em; color: var(--w30); z-index: 3; }
+
+/* ── ABOUT ─────────────────────────────────────────────────── */
+#page-about { overflow-y: auto; }
+.about-inner { display: flex; align-items: center; min-height: calc(100vh - 120px); padding: 40px; }
+.about-content { max-width: 480px; display: flex; flex-direction: column; gap: 34px; }
+.about-name { font-size: 15px; letter-spacing: .35em; }
+.about-block p { font-size: 13px; letter-spacing: .15em; line-height: 2.2; color: var(--w60); }
+.about-block a { color: var(--white); border-bottom: 1px solid var(--w30); }
+
+/* ── CONTACT ───────────────────────────────────────────────── */
+#page-contact { overflow-y: auto; }
+.contact-inner { display: flex; align-items: center; min-height: calc(100vh - 120px); padding: 40px; }
+.contact-content { max-width: 480px; width: 100%; display: flex; flex-direction: column; gap: 44px; }
+.contact-instruction p { font-size: 11px; letter-spacing: .2em; line-height: 2.5; color: var(--w60); }
+.contact-form { display: flex; flex-direction: column; gap: 28px; }
+.form-field input, .form-field textarea {
+  width: 100%; background: none; border: none; border-bottom: 1px solid var(--w30);
+  color: var(--white); font-family: var(--font); font-size: 11px; font-weight: 300;
+  letter-spacing: .2em; padding: 8px 0; outline: none; transition: border-color .2s; resize: none;
+}
+.form-field input::placeholder, .form-field textarea::placeholder { color: var(--w30); letter-spacing: .2em; }
+.form-field input:focus, .form-field textarea:focus { border-bottom-color: var(--white); }
+.submit-btn { align-self: flex-start; font-size: 11px; letter-spacing: .3em; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color .2s; }
+.submit-btn:hover { border-bottom-color: var(--white); }
+.contact-direct p { font-size: 11px; letter-spacing: .15em; color: var(--w40); }
+.contact-direct a { color: var(--white); border-bottom: 1px solid var(--w30); }
+
+@media (max-width: 768px) {
+  nav { padding: 18px 22px; }
+  .nav-links, .nav-sep { display: none; }
+  footer { padding: 14px 22px; }
+  .chapters-grid { flex-direction: column; }
+  .chapter-tile { aspect-ratio: 4/3; }
+  .chapter-tile-label { left: 18px; bottom: 18px; font-size: 12px; }
+  .about-inner, .contact-inner { padding: 24px; }
+  #viewer-wrap { padding: 70px 20px; }
+  #viewer-img { max-height: calc(100vh - 140px); }
+  .vbtn { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── ENTRY PAGE ─────────────────────────────────────────── -->
+<div class="page" id="page-entry">
+  <div id="hero-bg"></div>
+  <div id="entry-text">
+    <p class="entry-name">FALKOR</p>
+    <p class="entry-role">PHOTOGRAPHER</p>
+    <p class="entry-tag">DOCUMENTING THE QUIET LIVES OF TOKYO,<br>ONE FACE AT A TIME.</p>
+    <button id="enter-btn" onclick="goTo('portfolio')">ENTER</button>
+  </div>
+</div>
+
+<!-- ─── PORTFOLIO PAGE ─────────────────────────────────────── -->
+<div class="page out" id="page-portfolio">
+  <nav>
+    <span class="nav-logo" onclick="goTo('portfolio')" style="cursor:pointer">FALKOR</span>
+    <span class="nav-sep">·</span>
+    <div class="nav-links">
+      <span class="nav-link active" onclick="goTo('portfolio')">PORTFOLIO</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link" onclick="goTo('about')">ABOUT</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link" onclick="goTo('contact')">CONTACT</span>
+    </div>
+  </nav>
+
+  <div class="chapters-grid" id="chapters-grid"></div>
+
+  <footer><span class="footer-text">FALKOR · TOKYO · 2026</span><a href="http://localhost:3000/admin.html" class="admin-link" target="_blank">ADMIN</a></footer>
+</div>
+
+<!-- ─── IMAGE VIEWER ───────────────────────────────────────── -->
+<div class="page out" id="page-viewer">
+  <div id="viewer-blur-bg"></div>
+  <div id="viewer-header">
+    <button id="back-btn" onclick="goTo('portfolio')">← PORTFOLIO</button>
+    <span id="viewer-chapter-name"></span>
+  </div>
+  <div id="image-viewer">
+    <button class="vbtn" id="vprev" onclick="step(-1)">←</button>
+    <div id="viewer-wrap">
+      <img id="viewer-img" src="" alt="" />
+      <p id="viewer-caption"></p>
+    </div>
+    <button class="vbtn" id="vnext" onclick="step(1)">→</button>
+    <p id="vcounter"></p>
+  </div>
+</div>
+
+<!-- ─── ABOUT PAGE ─────────────────────────────────────────── -->
+<div class="page out" id="page-about">
+  <nav>
+    <span class="nav-logo" onclick="goTo('portfolio')" style="cursor:pointer">FALKOR</span>
+    <span class="nav-sep">·</span>
+    <div class="nav-links">
+      <span class="nav-link" onclick="goTo('portfolio')">PORTFOLIO</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link active" onclick="goTo('about')">ABOUT</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link" onclick="goTo('contact')">CONTACT</span>
+    </div>
+  </nav>
+  <div class="about-inner">
+    <div class="about-content">
+      <h1 class="about-name">FALKOR</h1>
+      <div class="about-block"><p>PHOTOGRAPHER BASED IN YOKOHAMA, JAPAN.</p></div>
+      <div class="about-block"><p>DOCUMENTING THE QUIET LIVES OF TOKYO,<br>ONE FACE AT A TIME.</p></div>
+      <div class="about-block"><p>CANON EOS M100.</p></div>
+      <div class="about-block">
+        <p>INSTAGRAM: <a href="https://instagram.com/falkor_ae" target="_blank">@FALKOR_AE</a></p>
+        <p>CONTACT: <span class="nav-link" onclick="goTo('contact')" style="cursor:pointer;border-bottom:1px solid rgba(255,255,255,.3)">SEND A MESSAGE</span></p>
+      </div>
+    </div>
+  </div>
+  <footer><span class="footer-text">FALKOR · TOKYO · 2026</span><a href="http://localhost:3000/admin.html" class="admin-link" target="_blank">ADMIN</a></footer>
+</div>
+
+<!-- ─── CONTACT PAGE ───────────────────────────────────────── -->
+<div class="page out" id="page-contact">
+  <nav>
+    <span class="nav-logo" onclick="goTo('portfolio')" style="cursor:pointer">FALKOR</span>
+    <span class="nav-sep">·</span>
+    <div class="nav-links">
+      <span class="nav-link" onclick="goTo('portfolio')">PORTFOLIO</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link" onclick="goTo('about')">ABOUT</span>
+      <span class="nav-dot">·</span>
+      <span class="nav-link active" onclick="goTo('contact')">CONTACT</span>
+    </div>
+  </nav>
+  <div class="contact-inner">
+    <div class="contact-content">
+      <div class="contact-instruction">
+        <p>FOR WORK ENQUIRIES AND COLLABORATIONS</p>
+      </div>
+      <div class="contact-direct">
+        <p>DM ON INSTAGRAM: <a href="https://www.instagram.com/falkor_ae/" target="_blank" rel="noopener">@FALKOR_AE</a></p>
+      </div>
+    </div>
+  </div>
+  <footer><span class="footer-text">FALKOR · TOKYO · 2026</span><a href="http://localhost:3000/admin.html" class="admin-link" target="_blank">ADMIN</a></footer>
+</div>
+
+<script>
+const P  = 'photos/portrait/';
+const ST = 'photos/people%20in%20street/';
+const TK = 'photos/';
+const s  = (base, f) => ({ src: base + encodeURIComponent(f) });
+
+const chapters = [
+  {
+    name: 'PORTRAIT',
+    cover: P + 'portrait%20highlight%20photo.jpg',
+    images: [
+      s(P, 'portait 1.jpg'),  s(P, 'portait 2a.jpg'), s(P, 'portait 2b.jpg'),
+      s(P, 'portait 2c.jpg'), s(P, 'portait 3a.jpg'), s(P, 'portait 3b.jpg'),
+      s(P, 'portait 3c.jpg'), s(P, 'portait 4a.jpg'), s(P, 'portait 4b.jpg'),
+      s(P, 'portait 6a.jpg'), s(P, 'portait 6b.jpg'), s(P, 'portait 7a.jpg'),
+      s(P, 'portait 7b.jpg'), s(P, 'portait 8a.jpg'), s(P, 'portait 8b.jpg'),
+    ]
+  },
+  {
+    name: 'STREETS',
+    cover: ST + 'street%20highlight%20photo.jpg',
+    images: [
+      s(ST, '1-IMG_5262.jpg'),  s(ST, '2-IMG_5254.jpg'),  s(ST, '3-IMG_5153.jpg'),
+      s(ST, '4-IMG_5146.jpg'),  s(ST, '5-IMG_5053.jpg'),  s(ST, '6-IMG_5002.jpg'),
+      s(ST, '7-IMG_4999.jpg'),  s(ST, '8-IMG_4967.jpg'),  s(ST, '17-IMG_4906.jpg'),
+      s(ST, '18-IMG_4896.jpg'), s(ST, '20-IMG_4860.jpg'), s(ST, '21-IMG_4802.jpg'),
+      s(ST, '22-IMG_4800.jpg'), s(ST, '23-IMG_4764.jpg'), s(ST, '28-IMG_4708.jpg'),
+      s(ST, '29-IMG_4707.jpg'), s(ST, '31-IMG_4692.jpg'), s(ST, '33-IMG_4661.jpg'),
+      s(ST, '34-IMG_4643.jpg'), s(ST, '35-IMG_4640.jpg'), s(ST, '36-IMG_4631.jpg'),
+      s(ST, '37-IMG_4609.jpg'), s(ST, '38-IMG_4581.jpg'), s(ST, '39-IMG_4561.jpg'),
+      s(ST, '40-IMG_4560.jpg'), s(ST, '41-IMG_4549.jpg'), s(ST, '42-IMG_4547.jpg'),
+      s(ST, '43-IMG_4544.jpg'), s(ST, '45-IMG_4531.jpg'), s(ST, '49-IMG_4476.jpg'),
+      s(ST, '57-IMG_4370.jpg'),
+    ]
+  },
+  {
+    name: 'TOKYO',
+    cover: TK + 'tokyo%20highlight%20photo.jpg',
+    images: [
+      s(TK, '19-IMG_4886.jpg'), s(TK, '30-IMG_4699.jpg'), s(TK, '32-IMG_4690.jpg'),
+      s(TK, '46-IMG_4518.jpg'), s(TK, '58-IMG_4316.jpg'), s(TK, '59-IMG_4282.jpg'),
+      s(TK, '60-IMG_4273.jpg'), s(TK, '61-IMG_4233.jpg'), s(TK, '62-20260426_175347.jpg'),
+      s(TK, 'car 1a.jpg'),      s(TK, 'car 1b.jpg'),      s(TK, 'car 1c.jpg'),
+    ]
+  },
+];
+
+// ── PAGE ROUTING ───────────────────────────────────────────
+const pages = ['entry','portfolio','about','contact','viewer'];
+let currentPage = 'entry';
+
+function goTo(name) {
+  document.getElementById('page-' + currentPage).classList.add('out');
+  document.getElementById('page-' + name).classList.remove('out');
+  currentPage = name;
+}
+
+// ── PORTFOLIO GRID ─────────────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('chapters-grid');
+  chapters.forEach((ch, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'chapter-tile';
+    tile.onclick = () => openChapter(i);
+    tile.innerHTML = `
+      <img src="${ch.cover}" alt="${ch.name}" loading="lazy" onerror="this.style.opacity='.1'" />
+      <div class="chapter-tile-overlay"></div>
+      <span class="chapter-tile-label">${ch.name}</span>
+      <span class="chapter-tile-count">${ch.images.length} ${ch.images.length === 1 ? 'IMAGE' : 'IMAGES'}</span>
+      <div class="chapter-tile-line"></div>
+    `;
+    grid.appendChild(tile);
+  });
+}
+
+// ── VIEWER ─────────────────────────────────────────────────
+let activeChapter = null, activeIdx = 0;
+
+function openChapter(i) {
+  activeChapter = chapters[i];
+  activeIdx = 0;
+  document.getElementById('viewer-chapter-name').textContent = activeChapter.name;
+  showFrame();
+  goTo('viewer');
+}
+
+function showFrame() {
+  const frame = activeChapter.images[activeIdx];
+  const img = document.getElementById('viewer-img');
+  img.style.opacity = '0';
+  img.src = frame.src;
+  img.onload = () => { img.style.opacity = '1'; };
+  document.getElementById('viewer-blur-bg').style.backgroundImage = `url('${frame.src}')`;
+  document.getElementById('viewer-caption').textContent = '';
+  document.getElementById('vcounter').textContent =
+    `${activeIdx + 1} / ${activeChapter.images.length}`;
+}
+
+function step(dir) {
+  activeIdx = (activeIdx + dir + activeChapter.images.length) % activeChapter.images.length;
+  showFrame();
+}
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (currentPage !== 'viewer') return;
+  if (e.key === 'ArrowRight') step(1);
+  if (e.key === 'ArrowLeft') step(-1);
+  if (e.key === 'Escape') goTo('portfolio');
+});
+
+// Touch swipe
+let tx = 0;
+document.getElementById('image-viewer').addEventListener('touchstart', e => tx = e.changedTouches[0].screenX);
+document.getElementById('image-viewer').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].screenX - tx;
+  if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+});
+
+
+// ── CONTACT FORM ───────────────────────────────────────────
+function submitForm(e) {
+  e.preventDefault();
+  alert('MESSAGE SENT.');
+  e.target.reset();
+}
+
+// ── INIT ───────────────────────────────────────────────────
+buildGrid();
+</script>
+</body>
+</html>
