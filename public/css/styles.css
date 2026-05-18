@@ -60,6 +60,29 @@ input, textarea, select { font-family: var(--font); }
   background: var(--black);
 }
 
+/* ── Layer 1 — Radial gradient overlay ──────────────────────
+   Sits above the photo (z-index 1) but below the text (z-index 2).
+   Darkest at the centre where text lives, fades outward so the
+   photography still breathes through at the edges.
+─────────────────────────────────────────────────────────────── */
+#hero-image-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.30) 45%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ── Layer 3 — Backdrop blur zone behind text block ─────────
+   Nearly invisible — blur(1px) softens image texture under the
+   letterforms. background is 8 % opacity so no visible panel.
+─────────────────────────────────────────────────────────────── */
 #entry-text {
   position: relative;
   z-index: 2;
@@ -68,45 +91,79 @@ input, textarea, select { font-family: var(--font); }
   flex-direction: column;
   align-items: center;
   gap: 20px;
+  padding: 40px 48px;
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  background: rgba(0, 0, 0, 0.08);
 }
 
+/* ── Layer 2 — Text shadow on all hero text ─────────────────
+   First shadow: tight dark drop-shadow for hard letterform edge.
+   Second shadow: wide soft aura around each word.
+   Together they guarantee legibility over any image tone.
+─────────────────────────────────────────────────────────────── */
+
+/* ── Layer 5 — Letter spacing & weight ──────────────────────
+   Wide tracking gives text-shadows space to render cleanly
+   between characters. FALKOR at weight 400 for firmness.
+─────────────────────────────────────────────────────────────── */
 .entry-name {
   font-size: 13px;
-  font-weight: 300;
-  letter-spacing: 0.35em;
+  font-weight: 400;
+  letter-spacing: 0.4em;
   color: var(--white);
+  text-shadow:
+    0 1px 12px rgba(0, 0, 0, 0.9),
+    0 0  40px rgba(0, 0, 0, 0.6);
 }
 
 .entry-role {
   font-size: 11px;
-  font-weight: 200;
-  letter-spacing: 0.4em;
+  font-weight: 300;
+  letter-spacing: 0.45em;
   color: var(--white-60);
+  text-shadow:
+    0 1px 12px rgba(0, 0, 0, 0.9),
+    0 0  40px rgba(0, 0, 0, 0.6);
 }
 
 .entry-tagline {
   font-size: 11px;
-  font-weight: 200;
-  letter-spacing: 0.3em;
-  line-height: 2;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  line-height: 2.2;
   color: var(--white-60);
   text-align: center;
+  text-shadow:
+    0 1px 12px rgba(0, 0, 0, 0.9),
+    0 0  40px rgba(0, 0, 0, 0.6);
 }
 
+/* ── Layer 4 — ENTER button treatment ───────────────────────
+   backdrop-filter + dark background separates the CTA from
+   whatever image tone sits directly behind it.
+   Border opacity raised to 0.6 for crispness.
+─────────────────────────────────────────────────────────────── */
 #enter-btn {
-  margin-top: 32px;
+  margin-top: 12px;
   font-size: 11px;
   font-weight: 300;
   letter-spacing: 0.5em;
   color: var(--white);
-  border: 1px solid var(--white-40);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   padding: 14px 36px;
-  transition: border-color 0.3s, color 0.3s;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  transition: border-color 0.3s, background 0.3s;
+  text-shadow:
+    0 1px 12px rgba(0, 0, 0, 0.9),
+    0 0  40px rgba(0, 0, 0, 0.6);
 }
 
 #enter-btn:hover {
   border-color: var(--white);
-  color: var(--white);
+  background: rgba(0, 0, 0, 0.40);
 }
 
 /* ─── SITE FADE IN ─────────────────────────────────────────── */
