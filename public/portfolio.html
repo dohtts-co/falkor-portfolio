@@ -7,8 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
-  <!-- Swiper 11 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body class="inner-page">
@@ -36,13 +34,13 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════════
-       STAGE 1 — 3D COVERFLOW CAROUSEL
+       STAGE 1 — CUSTOM 3D CAROUSEL
   ═══════════════════════════════════════════════════════ -->
   <div id="chapters-carousel-view">
-    <div class="swiper chapters-swiper" id="chapters-swiper">
-      <div class="swiper-wrapper" id="swiper-slides"></div>
-      <div class="swiper-button-prev"></div>
-      <div class="swiper-button-next"></div>
+    <div id="c-stage">
+      <button class="c-nav-btn" id="c-prev">&#8592;</button>
+      <div id="c-track"></div>
+      <button class="c-nav-btn" id="c-next">&#8594;</button>
     </div>
     <div id="no-images-notice" class="hidden">
       <p>NO IMAGES UPLOADED YET.<br>LOG IN AS ADMIN TO ADD PHOTOGRAPHS.</p>
@@ -104,7 +102,6 @@
     <a href="/admin.html" class="admin-link">ADMIN</a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="/js/portfolio.js"></script>
   <script>
     document.getElementById('hamburger').addEventListener('click', () => {

@@ -19,11 +19,14 @@ router.post('/contact', async (req, res) => {
     const { Resend } = require('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
 
+    // NOTE: 'from' must stay as onboarding@resend.dev until a custom domain is
+    // verified in the Resend dashboard (resend.com → Domains). Without a verified
+    // domain, Resend only delivers to the account owner's email on the free plan.
     await resend.emails.send({
       from:    'FALKOR Contact <onboarding@resend.dev>',
       to:      process.env.CONTACT_EMAIL || 'falkorjp@gmail.com',
       replyTo: email,
-      subject: `New enquiry from ${name}`,
+      subject: `FALKOR — MESSAGE FROM ${name}`,
       text:    `Name: ${name}\nEmail: ${email}\n\n${message}`,
       html: `
         <p><strong>Name:</strong> ${name}</p>

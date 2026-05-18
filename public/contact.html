@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CONTACT — FALKOR</title>
+  <title>CONTACT &mdash; FALKOR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
@@ -13,12 +13,12 @@
 
   <nav id="nav">
     <a href="/" class="nav-logo">FALKOR</a>
-    <div class="nav-separator">·</div>
+    <div class="nav-separator">&middot;</div>
     <div class="nav-links">
       <a href="/portfolio.html" class="nav-link">PORTFOLIO</a>
-      <span class="nav-dot">·</span>
+      <span class="nav-dot">&middot;</span>
       <a href="/about.html" class="nav-link">ABOUT</a>
-      <span class="nav-dot">·</span>
+      <span class="nav-dot">&middot;</span>
       <a href="/contact.html" class="nav-link active">CONTACT</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Menu">&#9776;</button>
@@ -35,32 +35,38 @@
 
   <main class="contact-main">
     <div class="contact-content">
+
       <div class="contact-instruction">
         <p>FOR WORK ENQUIRIES AND COLLABORATIONS</p>
       </div>
 
       <form class="contact-form" id="contact-form" onsubmit="submitForm(event)">
         <div class="form-field">
-          <input type="text" id="contact-name" placeholder="NAME" required autocomplete="name" />
+          <label for="contact-name">NAME</label>
+          <input type="text" id="contact-name" required autocomplete="name" />
         </div>
         <div class="form-field">
-          <input type="email" id="contact-email" placeholder="EMAIL" required autocomplete="email" />
+          <label for="contact-email">EMAIL</label>
+          <input type="email" id="contact-email" required autocomplete="email" />
         </div>
         <div class="form-field">
-          <textarea id="contact-message" placeholder="MESSAGE" rows="5" required></textarea>
+          <label for="contact-message">MESSAGE</label>
+          <textarea id="contact-message" rows="5" required></textarea>
         </div>
-        <button type="submit" class="submit-btn" id="submit-btn">SEND &nbsp;&#8594;</button>
-        <p class="form-status hidden" id="form-status"></p>
+        <button type="submit" class="submit-btn" id="submit-btn">SEND</button>
       </form>
+
+      <p class="form-status hidden" id="form-status"></p>
 
       <div class="contact-direct">
         <p>OR DM ON INSTAGRAM: <a href="https://www.instagram.com/falkor_ae/" target="_blank" rel="noopener">@FALKOR_AE</a></p>
       </div>
+
     </div>
   </main>
 
   <footer id="footer">
-    <span class="footer-text">FALKOR · TOKYO · 2026</span>
+    <span class="footer-text">FALKOR &middot; TOKYO &middot; 2026</span>
     <a href="/admin.html" class="admin-link">ADMIN</a>
   </footer>
 
@@ -75,14 +81,15 @@
     async function submitForm(e) {
       e.preventDefault();
       const btn    = document.getElementById('submit-btn');
+      const form   = document.getElementById('contact-form');
       const status = document.getElementById('form-status');
 
       const name    = document.getElementById('contact-name').value.trim();
       const email   = document.getElementById('contact-email').value.trim();
       const message = document.getElementById('contact-message').value.trim();
 
-      btn.disabled   = true;
-      btn.textContent = 'SENDING…';
+      btn.disabled    = true;
+      btn.textContent = 'SENDING';
       status.classList.add('hidden');
 
       try {
@@ -94,21 +101,24 @@
         const data = await res.json();
 
         if (res.ok) {
+          form.classList.add('hidden');
           status.textContent = 'MESSAGE SENT.';
           status.style.color = '';
-          e.target.reset();
+          status.classList.remove('hidden');
         } else {
           status.textContent = data.error || 'SOMETHING WENT WRONG. PLEASE TRY AGAIN.';
-          status.style.color = '#ff6b6b';
+          status.style.color = 'rgba(255,255,255,0.5)';
+          status.classList.remove('hidden');
+          btn.disabled    = false;
+          btn.textContent = 'SEND';
         }
-      } catch {
-        status.textContent = 'NETWORK ERROR. PLEASE TRY AGAIN.';
-        status.style.color = '#ff6b6b';
+      } catch (_) {
+        status.textContent = 'SOMETHING WENT WRONG. PLEASE TRY AGAIN.';
+        status.style.color = 'rgba(255,255,255,0.5)';
+        status.classList.remove('hidden');
+        btn.disabled    = false;
+        btn.textContent = 'SEND';
       }
-
-      status.classList.remove('hidden');
-      btn.disabled    = false;
-      btn.textContent = 'SEND  →';
     }
   </script>
 </body>
