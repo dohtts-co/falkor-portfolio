@@ -15,6 +15,48 @@ function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
+// Split chapter name at midpoint.
+// Even length → equal halves. Odd → extra char goes to right half.
+// "PORTRAIT" (8) → ["PORT", "RAIT"]
+// "STREETS"  (7) → ["STR",  "EETS"]
+// "TOKYO"    (5) → ["TO",   "KYO"]
+function splitWord(name) {
+  const s   = name.toUpperCase();
+  const mid = Math.floor(s.length / 2);
+  return [s.slice(0, mid), s.slice(mid)];
+}
+
+// Update the ghost typographic word behind the carousel.
+// animate=false → instant swap (used on first render / carousel rebuild)
+// animate=true  → 200ms fade-out, text swap, 200ms fade-in (used during rotation)
+function updateSplitWord(name, animate) {
+  const leftEl  = document.getElementById('c-word-left');
+  const rightEl = document.getElementById('c-word-right');
+  if (!leftEl || !rightEl) return;
+
+  const [left, right] = splitWord(name);
+
+  if (!animate) {
+    leftEl.textContent  = left;
+    rightEl.textContent = right;
+    leftEl.style.opacity  = '1';
+    rightEl.style.opacity = '1';
+    return;
+  }
+
+  // Fade out (CSS transition handles the 200ms)
+  leftEl.style.opacity  = '0';
+  rightEl.style.opacity = '0';
+
+  // Swap text at the midpoint, then fade back in
+  setTimeout(() => {
+    leftEl.textContent  = left;
+    rightEl.textContent = right;
+    leftEl.style.opacity  = '1';
+    rightEl.style.opacity = '1';
+  }, 200);
+}
+
 // ─── Load & init ──────────────────────────────────────────────
 async function loadChapters() {
   try {
@@ -24,6 +66,7 @@ async function loadChapters() {
 
     if (!visibleChapters.length) {
       document.getElementById('no-images-notice').classList.remove('hidden');
+      document.getElementById('c-stage').classList.add('hidden');
       return;
     }
 
@@ -34,7 +77,6 @@ async function loadChapters() {
     document.getElementById('c-next').addEventListener('click', () => rotate(1));
     document.getElementById('c-track').addEventListener('click', onTrackClick);
 
-    // Hide arrows when only one chapter
     if (visibleChapters.length < 2) {
       document.getElementById('c-prev').style.visibility = 'hidden';
       document.getElementById('c-next').style.visibility = 'hidden';
@@ -46,42 +88,39 @@ async function loadChapters() {
 
 // ─── Card factory ─────────────────────────────────────────────
 function makeCard(chapter) {
-  const card = document.createElement('div');
+  const card        = document.createElement('div');
   card.className    = 'c-card';
   card.dataset.slug = chapter.slug;
 
   const img = chapter.hero_image || chapter.lead_image;
   if (img) card.style.backgroundImage = `url('${imgSrc(img.filename)}')`;
 
-  card.innerHTML = `
-    <div class="c-card-gradient"></div>
-    <span class="c-card-label">${chapter.name}</span>
-  `;
   return card;
 }
 
-// ─── Build carousel (or rebuild after returning) ──────────────
+// ─── Build (or rebuild) carousel ─────────────────────────────
 function buildCarousel() {
   const track = document.getElementById('c-track');
   track.innerHTML = '';
 
   const n = visibleChapters.length;
 
-  const cards = [
+  [
     { ch: visibleChapters[mod(centerIdx - 1, n)], pos: 'left'   },
     { ch: visibleChapters[centerIdx],              pos: 'center' },
     { ch: visibleChapters[mod(centerIdx + 1, n)], pos: 'right'  },
-  ];
-
-  cards.forEach(({ ch, pos }) => {
+  ].forEach(({ ch, pos }) => {
     const card = makeCard(ch);
     card.dataset.pos = pos;
     card.classList.add('c-pos-' + pos);
     track.appendChild(card);
   });
+
+  // Set ghost word immediately (no animation)
+  updateSplitWord(visibleChapters[centerIdx].name, false);
 }
 
-// ─── Click delegation ─────────────────────────────────────────
+// ─── Click delegation on track ────────────────────────────────
 function onTrackClick(e) {
   if (isAnimating) return;
   const card = e.target.closest('.c-card');
@@ -94,8 +133,8 @@ function onTrackClick(e) {
 }
 
 // ─── Rotate carousel ──────────────────────────────────────────
-// dir +1 = press RIGHT  → left card → centre, centre → right, right exits right
-// dir -1 = press LEFT   → right card → centre, centre → left, left exits left
+// dir +1 = press RIGHT → left card → centre, centre → right, right exits
+// dir -1 = press LEFT  → right card → centre, centre → left,  left exits
 function rotate(dir) {
   if (isAnimating) return;
   const n = visibleChapters.length;
@@ -108,14 +147,19 @@ function rotate(dir) {
   const rightCard  = track.querySelector('[data-pos="right"]');
 
   if (dir === 1) {
-    // Entering card comes from off-screen LEFT (it's the chapter two before current centre)
+    // New centre = what was left
+    const newCenter = visibleChapters[mod(centerIdx - 1, n)];
+    updateSplitWord(newCenter.name, true);
+
+    // Entering card slides in from off-screen left
     const enterCard = makeCard(visibleChapters[mod(centerIdx - 2, n)]);
     enterCard.dataset.pos = 'left';
     enterCard.classList.add('c-pos-offscreen-left');
     track.appendChild(enterCard);
 
-    void enterCard.offsetWidth; // commit initial position before transition fires
+    void enterCard.offsetWidth; // force reflow so initial position commits
 
+    // Transition all four cards simultaneously
     leftCard.dataset.pos   = 'center';
     leftCard.classList.remove('c-pos-left');
     leftCard.classList.add('c-pos-center');
@@ -136,7 +180,11 @@ function rotate(dir) {
     setTimeout(() => { rightCard.remove(); isAnimating = false; }, 450);
 
   } else {
-    // Entering card comes from off-screen RIGHT
+    // New centre = what was right
+    const newCenter = visibleChapters[mod(centerIdx + 1, n)];
+    updateSplitWord(newCenter.name, true);
+
+    // Entering card slides in from off-screen right
     const enterCard = makeCard(visibleChapters[mod(centerIdx + 2, n)]);
     enterCard.dataset.pos = 'right';
     enterCard.classList.add('c-pos-offscreen-right');
@@ -188,8 +236,8 @@ async function openChapter(slug) {
 
 // ─── Chapter intro screen ─────────────────────────────────────
 function showChapterIntro(data) {
-  document.getElementById('chapter-intro-img').src            = imgSrc(data.hero_image.filename);
-  document.getElementById('chapter-intro-title').textContent  = data.name;
+  document.getElementById('chapter-intro-img').src           = imgSrc(data.hero_image.filename);
+  document.getElementById('chapter-intro-title').textContent = data.name;
   document.getElementById('chapters-carousel-view').classList.add('hidden');
   document.getElementById('nav').classList.add('hidden');
   document.getElementById('chapter-intro').classList.remove('hidden');
@@ -212,11 +260,11 @@ function showImageGrid(chapter) {
   grid.innerHTML = '';
 
   chapter.images.forEach((img, index) => {
-    const el    = document.createElement('img');
-    el.src      = imgSrc(img.filename);
-    el.alt      = chapter.name;
-    el.loading  = 'lazy';
-    el.onclick  = () => openImageFromGrid(index);
+    const el   = document.createElement('img');
+    el.src     = imgSrc(img.filename);
+    el.alt     = chapter.name;
+    el.loading = 'lazy';
+    el.onclick = () => openImageFromGrid(index);
     grid.appendChild(el);
   });
 
@@ -238,13 +286,13 @@ function showImage(index) {
   const images = currentChapter.images;
   if (!images.length) return;
 
-  currentIndex    = (index + images.length) % images.length;
-  const img       = images[currentIndex];
-  const src       = imgSrc(img.filename);
+  currentIndex = (index + images.length) % images.length;
+  const img    = images[currentIndex];
+  const src    = imgSrc(img.filename);
 
-  document.getElementById('viewer-img').src            = src;
-  document.getElementById('viewer-img').alt            = currentChapter.name;
-  document.getElementById('viewer-blur-img').src       = src;
+  document.getElementById('viewer-img').src             = src;
+  document.getElementById('viewer-img').alt             = currentChapter.name;
+  document.getElementById('viewer-blur-img').src        = src;
   document.getElementById('viewer-caption').textContent = `${currentChapter.name} · FALKOR`;
   document.getElementById('viewer-counter').textContent = `${currentIndex + 1} / ${images.length}`;
 }
@@ -264,12 +312,12 @@ function showChapters() {
   document.getElementById('chapters-carousel-view').classList.remove('hidden');
   document.getElementById('nav').classList.remove('hidden');
 
-  // Re-centre on the chapter the user was in
+  // Restore the chapter the user was in to centre
   if (carouselCenterSlug) {
     const idx = visibleChapters.findIndex(ch => ch.slug === carouselCenterSlug);
     if (idx !== -1) centerIdx = idx;
   }
-  buildCarousel();
+  buildCarousel(); // also calls updateSplitWord with no animation
 }
 
 // ─── Keyboard ─────────────────────────────────────────────────

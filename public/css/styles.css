@@ -271,57 +271,113 @@ input, textarea, select { font-family: var(--font); }
 /* ─── INNER PAGE ───────────────────────────────────────────── */
 .inner-page body { overflow-y: auto; }
 
-/* ─── CAROUSEL (custom 3D — stage 1) ───────────────────────── */
+/* ─── CAROUSEL — custom 3D with split-word typography ────────
+   Layout: [word-left][←][  track  ][→][word-right]
+   The ghost chapter name is split at its midpoint and placed on
+   either side of the card group, creating the illusion that the
+   cards physically part the word open.
+─────────────────────────────────────────────────────────────── */
 #chapters-carousel-view {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 80px 0;
 }
 
-/* Row: [← btn]  [track]  [→ btn] */
+/* Five-element row: c-left | c-track | c-right */
 #c-stage {
   display: flex;
   align-items: center;
-  gap: 28px;
+  width: 100%;
+  padding: 80px 40px;
+  box-sizing: border-box;
 }
 
+/* ── Left column: ghost-word-left + prev button ── */
+#c-left {
+  flex: 1;
+  min-width: 0;               /* allow flex shrinking so text never overflows */
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;           /* clip ghost text at column boundary */
+}
+
+/* ── Right column: next button + ghost-word-right ── */
+#c-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+/* ── Ghost typographic word halves ── */
+.c-word {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(72px, 11vw, 156px);
+  font-weight: 900;
+  font-family: var(--font);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.13);
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+#c-word-left  { text-align: right; }
+#c-word-right { text-align: left;  }
+
+/* ── Navigation buttons ── */
 .c-nav-btn {
   flex-shrink: 0;
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255,255,255,0.45);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 16px 10px;
+  /* 44 × 44 minimum tap target */
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
   transition: color 0.2s;
   user-select: none;
   -webkit-user-select: none;
 }
 .c-nav-btn:hover { color: #fff; }
 
-/* The clipping window — only 3 cards are ever visible inside here */
+/* ── Card track — clipping window for exactly 3 cards ──
+   Width is calculated so side cards' outer edges reach the
+   track boundary, letting the ghost word butt up against them.
+   Center card: 320 px. Side cards 60 % scale = 192 px visual.
+   Side card centres at ±304 px → outer edges at 304-96 = ±208 px
+   from track centre, well within the 800 px track.
+── */
 #c-track {
   position: relative;
+  flex-shrink: 0;
   width: 800px;
   height: 480px;
-  overflow: hidden;       /* cards outside this box are clipped */
-  flex-shrink: 0;
+  overflow: hidden;
 }
 
 /* ── Base card ── */
 .c-card {
   position: absolute;
-  /* card is centred inside the track via left/transform */
   left: 50%;
   top: 50%;
-  width: 340px;
-  height: 480px;
-  margin-left: -170px;   /* half width offset so transform origin = card centre */
-  margin-top:  -240px;
+  width: 320px;
+  height: 460px;
+  margin-left: -160px;    /* shifts transform origin to card centre */
+  margin-top:  -230px;
   background-size: cover;
   background-position: center;
   background-color: #111;
@@ -330,30 +386,7 @@ input, textarea, select { font-family: var(--font); }
   transition: transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
 }
 
-.c-card-gradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.70) 0%, rgba(0,0,0,0) 55%);
-  pointer-events: none;
-}
-
-.c-card-label {
-  position: absolute;
-  bottom: 22px;
-  left: 22px;
-  right: 22px;
-  font-size: 11px;
-  font-weight: 300;
-  letter-spacing: 0.38em;
-  color: #fff;
-  pointer-events: none;
-}
-
-/* ── Card positions ──
-   Side cards are 60 % scale, rotated 40 ° Y, dimmed to 55 % brightness.
-   translateX values place their visual centres just inside the track edges.
-   The offscreen positions sit outside the 800 px track so overflow:hidden clips them.
-*/
+/* ── Card position states ──────────────────────────────────── */
 .c-pos-center {
   transform: perspective(1000px) translateX(0) rotateY(0deg) scale(1);
   filter: brightness(1);
@@ -361,24 +394,26 @@ input, textarea, select { font-family: var(--font); }
   z-index: 3;
 }
 
+/* Side cards: ±304 px keeps their outer visual edge flush with
+   the track boundary so the ghost word appears to split there. */
 .c-pos-left {
-  transform: perspective(1000px) translateX(-296px) rotateY(40deg) scale(0.6);
-  filter: brightness(0.55);
+  transform: perspective(1000px) translateX(-304px) rotateY(40deg) scale(0.6);
+  filter: brightness(0.5);
   opacity: 1;
   z-index: 2;
 }
 
 .c-pos-right {
-  transform: perspective(1000px) translateX(296px) rotateY(-40deg) scale(0.6);
-  filter: brightness(0.55);
+  transform: perspective(1000px) translateX(304px) rotateY(-40deg) scale(0.6);
+  filter: brightness(0.5);
   opacity: 1;
   z-index: 2;
 }
 
-/* Off-screen: fully outside the 800 px track — overflow:hidden hides them */
+/* Off-screen: outside the 800 px track — overflow:hidden clips them */
 .c-pos-offscreen-left {
   transform: perspective(1000px) translateX(-560px) rotateY(40deg) scale(0.6);
-  filter: brightness(0.55);
+  filter: brightness(0.5);
   opacity: 0;
   z-index: 1;
   pointer-events: none;
@@ -386,7 +421,7 @@ input, textarea, select { font-family: var(--font); }
 
 .c-pos-offscreen-right {
   transform: perspective(1000px) translateX(560px) rotateY(-40deg) scale(0.6);
-  filter: brightness(0.55);
+  filter: brightness(0.5);
   opacity: 0;
   z-index: 1;
   pointer-events: none;
@@ -790,14 +825,13 @@ input, textarea, select { font-family: var(--font); }
   #footer { padding: 16px 24px; }
 
   /* ── Carousel ── */
-  #c-stage { gap: 14px; }
-  #c-track  { width: 520px; height: 370px; }
+  #c-stage { padding: 80px 20px; }
+  #c-track  { width: 520px; height: 360px; }
   .c-card   { width: 220px; height: 310px; margin-left: -110px; margin-top: -155px; }
-  .c-pos-center        { transform: perspective(900px) translateX(0)      rotateY(0deg)   scale(1);   }
-  .c-pos-left          { transform: perspective(900px) translateX(-195px) rotateY(40deg)  scale(0.6); }
-  .c-pos-right         { transform: perspective(900px) translateX(195px)  rotateY(-40deg) scale(0.6); }
-  .c-pos-offscreen-left  { transform: perspective(900px) translateX(-390px) rotateY(40deg)  scale(0.6); opacity:0; }
-  .c-pos-offscreen-right { transform: perspective(900px) translateX(390px)  rotateY(-40deg) scale(0.6); opacity:0; }
+  .c-pos-left  { transform: perspective(900px) translateX(-208px) rotateY(40deg)  scale(0.6); }
+  .c-pos-right { transform: perspective(900px) translateX(208px)  rotateY(-40deg) scale(0.6); }
+  .c-pos-offscreen-left  { transform: perspective(900px) translateX(-400px) rotateY(40deg)  scale(0.6); opacity:0; }
+  .c-pos-offscreen-right { transform: perspective(900px) translateX(400px)  rotateY(-40deg) scale(0.6); opacity:0; }
 
   /* ── Image grid ── */
   #chapter-image-grid { columns: 2; }
@@ -814,13 +848,14 @@ input, textarea, select { font-family: var(--font); }
 }
 
 @media (max-width: 560px) {
-  #c-stage { gap: 8px; }
-  #c-track  { width: 340px; height: 280px; }
-  .c-card   { width: 160px; height: 213px; margin-left: -80px; margin-top: -107px; }
-  .c-nav-btn { font-size: 20px; padding: 12px 6px; }
-  .c-pos-center        { transform: perspective(700px) translateX(0)      rotateY(0deg)   scale(1);   }
-  .c-pos-left          { transform: perspective(700px) translateX(-128px) rotateY(40deg)  scale(0.6); }
-  .c-pos-right         { transform: perspective(700px) translateX(128px)  rotateY(-40deg) scale(0.6); }
-  .c-pos-offscreen-left  { transform: perspective(700px) translateX(-250px) rotateY(40deg)  scale(0.6); opacity:0; }
-  .c-pos-offscreen-right { transform: perspective(700px) translateX(250px)  rotateY(-40deg) scale(0.6); opacity:0; }
+  #c-stage { padding: 80px 12px; }
+  #c-left, #c-right { gap: 8px; }
+  #c-track  { width: 320px; height: 270px; }
+  .c-card   { width: 150px; height: 200px; margin-left: -75px; margin-top: -100px; }
+  .c-nav-btn { font-size: 18px; min-width: 36px; min-height: 44px; }
+  .c-word   { font-size: clamp(28px, 7vw, 52px); }
+  .c-pos-left  { transform: perspective(700px) translateX(-120px) rotateY(40deg)  scale(0.6); }
+  .c-pos-right { transform: perspective(700px) translateX(120px)  rotateY(-40deg) scale(0.6); }
+  .c-pos-offscreen-left  { transform: perspective(700px) translateX(-240px) rotateY(40deg)  scale(0.6); opacity:0; }
+  .c-pos-offscreen-right { transform: perspective(700px) translateX(240px)  rotateY(-40deg) scale(0.6); opacity:0; }
 }

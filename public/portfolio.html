@@ -6,7 +6,7 @@
   <title>PORTFOLIO — FALKOR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body class="inner-page">
@@ -38,9 +38,18 @@
   ═══════════════════════════════════════════════════════ -->
   <div id="chapters-carousel-view">
     <div id="c-stage">
-      <button class="c-nav-btn" id="c-prev">&#8592;</button>
+      <!-- Left column: ghost word half + prev button -->
+      <div id="c-left">
+        <span class="c-word" id="c-word-left"></span>
+        <button class="c-nav-btn" id="c-prev">&#8592;</button>
+      </div>
+      <!-- Card track — exactly 3 cards, clipped -->
       <div id="c-track"></div>
-      <button class="c-nav-btn" id="c-next">&#8594;</button>
+      <!-- Right column: next button + ghost word half -->
+      <div id="c-right">
+        <button class="c-nav-btn" id="c-next">&#8594;</button>
+        <span class="c-word" id="c-word-right"></span>
+      </div>
     </div>
     <div id="no-images-notice" class="hidden">
       <p>NO IMAGES UPLOADED YET.<br>LOG IN AS ADMIN TO ADD PHOTOGRAPHS.</p>
