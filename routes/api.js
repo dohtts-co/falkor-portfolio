@@ -3,6 +3,43 @@ const db      = require('../database');
 
 const router = express.Router();
 
+// ─── Contact form ─────────────────────────────────────────────
+router.post('/contact', async (req, res) => {
+  const { name, email, message } = req.body || {};
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'NAME, EMAIL and MESSAGE are required.' });
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('RESEND_API_KEY not set — contact form disabled');
+    return res.status(503).json({ error: 'Contact form is not configured yet.' });
+  }
+
+  try {
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    await resend.emails.send({
+      from:    'FALKOR Contact <onboarding@resend.dev>',
+      to:      process.env.CONTACT_EMAIL || 'domarkezaq@gmail.com',
+      replyTo: email,
+      subject: `New enquiry from ${name}`,
+      text:    `Name: ${name}\nEmail: ${email}\n\n${message}`,
+      html: `
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <br/>
+        <p>${message.replace(/\n/g, '<br/>')}</p>
+      `,
+    });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Resend error', err);
+    res.status(500).json({ error: 'Failed to send message. Please try again.' });
+  }
+});
+
 router.get('/chapters', (req, res) => {
   const chapters = db.getChapters();
   const result   = chapters.map(ch => {

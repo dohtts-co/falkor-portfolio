@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400&display=swap" rel="stylesheet" />
+  <!-- Swiper 11 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   <link rel="stylesheet" href="/css/styles.css" />
 </head>
 <body class="inner-page">
@@ -33,15 +35,34 @@
     </div>
   </div>
 
-  <!-- CHAPTER GRID VIEW -->
-  <main id="chapters-view">
-    <div id="chapters-grid"></div>
+  <!-- ═══════════════════════════════════════════════════════
+       STAGE 1 — 3D COVERFLOW CAROUSEL
+  ═══════════════════════════════════════════════════════ -->
+  <div id="chapters-carousel-view">
+    <div class="swiper chapters-swiper" id="chapters-swiper">
+      <div class="swiper-wrapper" id="swiper-slides"></div>
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
     <div id="no-images-notice" class="hidden">
       <p>NO IMAGES UPLOADED YET.<br>LOG IN AS ADMIN TO ADD PHOTOGRAPHS.</p>
     </div>
-  </main>
+  </div>
 
-  <!-- CHAPTER INTRO SCREEN (sub-hero) -->
+  <!-- ═══════════════════════════════════════════════════════
+       STAGE 2 — IMAGE GRID
+  ═══════════════════════════════════════════════════════ -->
+  <div id="chapter-grid-view" class="hidden">
+    <header id="chapter-grid-header">
+      <button id="grid-back-btn" onclick="showChapters()">&#8592; BACK</button>
+      <span id="grid-chapter-title"></span>
+    </header>
+    <div id="chapter-image-grid"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       CHAPTER INTRO SCREEN (sub-hero)
+  ═══════════════════════════════════════════════════════ -->
   <div id="chapter-intro" class="hidden">
     <div id="chapter-intro-bg-wrap">
       <img id="chapter-intro-img" src="" alt="" />
@@ -54,19 +75,19 @@
     </div>
   </div>
 
-  <!-- CHAPTER DETAIL VIEW -->
+  <!-- ═══════════════════════════════════════════════════════
+       STAGE 3 — FULLSCREEN IMAGE VIEWER
+  ═══════════════════════════════════════════════════════ -->
   <div id="chapter-view" class="hidden">
     <header id="chapter-header">
-      <button id="back-btn" onclick="showChapters()">&#8592; PORTFOLIO</button>
+      <button id="back-btn" onclick="closeViewer()">&#8592; BACK</button>
       <span id="chapter-title"></span>
     </header>
 
     <div id="image-viewer">
-      <!-- Blurred colour background -->
       <div id="viewer-blur-bg">
         <img id="viewer-blur-img" src="" alt="" />
       </div>
-
       <button id="prev-btn" class="viewer-btn" aria-label="Previous">&#8592;</button>
       <div id="viewer-image-wrap">
         <img id="viewer-img" src="" alt="" />
@@ -83,6 +104,7 @@
     <a href="/admin.html" class="admin-link">ADMIN</a>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script src="/js/portfolio.js"></script>
   <script>
     document.getElementById('hamburger').addEventListener('click', () => {

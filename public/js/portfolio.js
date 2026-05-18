@@ -1,82 +1,98 @@
-let chapters     = [];
-let currentChapter = null;
-let currentIndex   = 0;
+// ─── State ────────────────────────────────────────────────────
+let chapters        = [];   // all chapters from API
+let visibleChapters = [];   // chapters that have at least one image
+let currentChapter  = null; // chapter currently open
+let currentIndex    = 0;    // index of image shown in fullscreen viewer
+let carouselActiveSlug = null; // slug of last-active carousel slide (for returning)
+let swiperInstance  = null;
 
+// ─── Helpers ──────────────────────────────────────────────────
+function imgSrc(filename) {
+  return filename.startsWith('http') ? filename : '/' + filename;
+}
+
+// ─── Load & carousel init ─────────────────────────────────────
 async function loadChapters() {
   try {
     const res = await fetch('/api/chapters');
     chapters  = await res.json();
-    renderChapterGrid();
+    visibleChapters = chapters.filter(ch => ch.image_count > 0);
+
+    if (!visibleChapters.length) {
+      document.getElementById('no-images-notice').classList.remove('hidden');
+      return;
+    }
+    document.getElementById('no-images-notice').classList.add('hidden');
+    buildSlides();
+    initSwiper();
   } catch (e) {
     console.error('Failed to load chapters', e);
   }
 }
 
-// ── Chapter grid with smart portrait / landscape grouping ─────────────────────
-// Every group of 3 chapters → 3-column portrait row
-// Leftover 1 or 2 chapters  → landscape stacked row
-// Pattern repeats infinitely as chapters are added
-function renderChapterGrid() {
-  const grid   = document.getElementById('chapters-grid');
-  const notice = document.getElementById('no-images-notice');
-  grid.innerHTML = '';
+function buildSlides() {
+  const wrapper = document.getElementById('swiper-slides');
+  wrapper.innerHTML = '';
 
-  const visible = chapters.filter(ch => ch.image_count > 0);
+  visibleChapters.forEach(ch => {
+    const slide = document.createElement('div');
+    slide.className = 'swiper-slide';
+    slide.dataset.slug = ch.slug;
 
-  if (!visible.length) { notice.classList.remove('hidden'); return; }
-  notice.classList.add('hidden');
+    const coverImg = ch.hero_image || ch.lead_image;
+    const coverSrc = coverImg ? imgSrc(coverImg.filename) : '';
 
-  let i = 0;
-  while (i < visible.length) {
-    const remaining = visible.length - i;
+    slide.innerHTML = coverSrc
+      ? `<img src="${coverSrc}" alt="${ch.name}" loading="lazy" />
+         <div class="slide-overlay"></div>
+         <span class="slide-label">${ch.name}</span>`
+      : `<div class="slide-empty">${ch.name}</div>`;
 
-    if (remaining >= 3) {
-      // Portrait trio
-      const row = document.createElement('div');
-      row.className = 'chapter-row-portrait';
-      for (let j = 0; j < 3; j++) {
-        row.appendChild(createTile(visible[i + j]));
-      }
-      grid.appendChild(row);
-      i += 3;
-    } else {
-      // Landscape (1 or 2 remaining)
-      const row = document.createElement('div');
-      row.className = 'chapter-row-landscape';
-      for (let j = 0; j < remaining; j++) {
-        row.appendChild(createTile(visible[i + j]));
-      }
-      grid.appendChild(row);
-      i += remaining;
-    }
-  }
+    wrapper.appendChild(slide);
+  });
 }
 
-function createTile(ch) {
-  const tile     = document.createElement('div');
-  tile.className = 'chapter-tile';
-  tile.onclick   = () => openChapter(ch.slug);
+function initSwiper() {
+  // Destroy previous instance if re-initialising
+  if (swiperInstance) { swiperInstance.destroy(true, true); swiperInstance = null; }
 
-  // Use designated cover, fall back to lead image
-  const coverImg = ch.hero_image || ch.lead_image;
+  swiperInstance = new Swiper('.chapters-swiper', {
+    effect:         'coverflow',
+    grabCursor:     true,
+    centeredSlides: true,
+    slidesPerView:  'auto',
+    loop:           true,
+    loopedSlides:   visibleChapters.length, // clone count prevents blank-slide artefacts
 
-  if (coverImg) {
-    const src = coverImg.filename.startsWith('http') ? coverImg.filename : '/' + coverImg.filename;
-    tile.innerHTML = `
-      <img src="${src}" alt="${ch.name}" loading="lazy" />
-      <div class="chapter-tile-overlay"></div>
-      <span class="chapter-tile-label">${ch.name}</span>
-      <span class="chapter-tile-count">${ch.image_count} ${ch.image_count === 1 ? 'IMAGE' : 'IMAGES'}</span>
-    `;
-  } else {
-    tile.innerHTML = `<div class="chapter-empty">${ch.name}</div>`;
-  }
+    coverflowEffect: {
+      rotate:       42,
+      stretch:      0,
+      depth:        220,
+      modifier:     1,
+      slideShadows: false,
+    },
 
-  return tile;
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+
+    on: {
+      // Clicking the active (centre) slide opens the chapter
+      click(sw) {
+        const clicked = sw.clickedSlide;
+        if (clicked && clicked.classList.contains('swiper-slide-active')) {
+          const slug = clicked.dataset.slug;
+          if (slug) openChapter(slug);
+        }
+      },
+    },
+  });
 }
 
-// ── Open chapter ──────────────────────────────────────────────────────────────
+// ─── Stage 1 → 2 : Open chapter ──────────────────────────────
 async function openChapter(slug) {
+  carouselActiveSlug = slug;
   try {
     const res  = await fetch(`/api/chapters/${slug}`);
     const data = await res.json();
@@ -95,29 +111,52 @@ async function openChapter(slug) {
   }
 }
 
-// ── Chapter intro screen ──────────────────────────────────────────────────────
+// ─── Chapter intro screen (sub-hero) ─────────────────────────
 function showChapterIntro(data) {
-  const src = data.hero_image.filename.startsWith('http')
-    ? data.hero_image.filename
-    : '/' + data.hero_image.filename;
-
-  document.getElementById('chapter-intro-img').src = src;
+  document.getElementById('chapter-intro-img').src   = imgSrc(data.hero_image.filename);
   document.getElementById('chapter-intro-title').textContent = data.name;
-  document.getElementById('chapters-view').classList.add('hidden');
+  document.getElementById('chapters-carousel-view').classList.add('hidden');
   document.getElementById('chapter-intro').classList.remove('hidden');
 }
 
 function enterChapterImages() {
   document.getElementById('chapter-intro').classList.add('hidden');
-  document.getElementById('chapters-view').classList.add('hidden');
-  document.getElementById('chapter-view').classList.remove('hidden');
-  document.getElementById('chapter-title').textContent = currentChapter.name;
-  showImage(0);
+  document.getElementById('chapters-carousel-view').classList.add('hidden');
+  showImageGrid(currentChapter);
 }
 
 document.getElementById('chapter-intro-enter').addEventListener('click', enterChapterImages);
 
-// ── Image viewer ──────────────────────────────────────────────────────────────
+// ─── Stage 2 : Image grid ────────────────────────────────────
+function showImageGrid(chapter) {
+  document.getElementById('grid-chapter-title').textContent = chapter.name;
+
+  const grid = document.getElementById('chapter-image-grid');
+  grid.innerHTML = '';
+
+  chapter.images.forEach((img, index) => {
+    const el = document.createElement('img');
+    el.src     = imgSrc(img.filename);
+    el.alt     = chapter.name;
+    el.loading = 'lazy';
+    el.onclick = () => openImageFromGrid(index);
+    grid.appendChild(el);
+  });
+
+  document.getElementById('chapter-grid-view').classList.remove('hidden');
+  // Scroll grid to top every time it opens
+  window.scrollTo(0, 0);
+}
+
+// ─── Stage 2 → 3 : Open fullscreen viewer from grid ──────────
+function openImageFromGrid(index) {
+  document.getElementById('chapter-grid-view').classList.add('hidden');
+  document.getElementById('chapter-title').textContent = currentChapter.name;
+  document.getElementById('chapter-view').classList.remove('hidden');
+  showImage(index);
+}
+
+// ─── Stage 3 : Fullscreen viewer ─────────────────────────────
 function showImage(index) {
   if (!currentChapter) return;
   const images = currentChapter.images;
@@ -125,46 +164,60 @@ function showImage(index) {
 
   currentIndex = (index + images.length) % images.length;
   const img    = images[currentIndex];
-  const src    = img.filename.startsWith('http') ? img.filename : '/' + img.filename;
+  const src    = imgSrc(img.filename);
 
-  // Sharp foreground image
-  const viewerImg = document.getElementById('viewer-img');
-  viewerImg.src   = src;
-  viewerImg.alt   = currentChapter.name;
-
-  // Blurred background — same image, styled to bleed colour
+  document.getElementById('viewer-img').src      = src;
+  document.getElementById('viewer-img').alt      = currentChapter.name;
   document.getElementById('viewer-blur-img').src = src;
-
-  document.getElementById('viewer-caption').textContent = `${currentChapter.name} · FALKOR`;
-  document.getElementById('viewer-counter').textContent = `${currentIndex + 1} / ${images.length}`;
+  document.getElementById('viewer-caption').textContent  = `${currentChapter.name} · FALKOR`;
+  document.getElementById('viewer-counter').textContent  = `${currentIndex + 1} / ${images.length}`;
 }
 
+// Close fullscreen viewer → return to image grid
+function closeViewer() {
+  document.getElementById('chapter-view').classList.add('hidden');
+  document.getElementById('chapter-grid-view').classList.remove('hidden');
+}
+
+// Return all the way to the carousel
 function showChapters() {
   currentChapter = null;
   document.getElementById('chapter-intro').classList.add('hidden');
   document.getElementById('chapter-view').classList.add('hidden');
-  document.getElementById('chapters-view').classList.remove('hidden');
+  document.getElementById('chapter-grid-view').classList.add('hidden');
+  document.getElementById('chapters-carousel-view').classList.remove('hidden');
+
+  // Re-centre on the chapter the user came from
+  if (carouselActiveSlug && swiperInstance) {
+    const realIdx = visibleChapters.findIndex(ch => ch.slug === carouselActiveSlug);
+    if (realIdx !== -1) swiperInstance.slideToLoop(realIdx, 300);
+  }
 }
 
-// ── Keyboard ──────────────────────────────────────────────────────────────────
+// ─── Keyboard navigation ──────────────────────────────────────
 document.addEventListener('keydown', e => {
-  const intro = document.getElementById('chapter-intro');
-  if (!intro.classList.contains('hidden')) { enterChapterImages(); return; }
-  if (!currentChapter) return;
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showImage(currentIndex + 1);
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showImage(currentIndex - 1);
-  if (e.key === 'Escape') showChapters();
+  // Intro screen — any key enters images
+  if (!document.getElementById('chapter-intro').classList.contains('hidden')) {
+    enterChapterImages();
+    return;
+  }
+  // Fullscreen viewer
+  if (!document.getElementById('chapter-view').classList.contains('hidden')) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') showImage(currentIndex + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   showImage(currentIndex - 1);
+    if (e.key === 'Escape') closeViewer();
+  }
 });
 
-// ── Buttons ───────────────────────────────────────────────────────────────────
+// ─── Viewer nav buttons ───────────────────────────────────────
 document.getElementById('next-btn').addEventListener('click', () => showImage(currentIndex + 1));
 document.getElementById('prev-btn').addEventListener('click', () => showImage(currentIndex - 1));
 
-// ── Swipe ─────────────────────────────────────────────────────────────────────
+// ─── Touch swipe in fullscreen viewer ────────────────────────
 let touchStartX = 0;
 document.getElementById('image-viewer').addEventListener('touchstart', e => {
   touchStartX = e.changedTouches[0].screenX;
-});
+}, { passive: true });
 document.getElementById('image-viewer').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].screenX - touchStartX;
   if (Math.abs(dx) > 50) {

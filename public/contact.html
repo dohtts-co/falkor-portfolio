@@ -39,8 +39,22 @@
         <p>FOR WORK ENQUIRIES AND COLLABORATIONS</p>
       </div>
 
+      <form class="contact-form" id="contact-form" onsubmit="submitForm(event)">
+        <div class="form-field">
+          <input type="text" id="contact-name" placeholder="NAME" required autocomplete="name" />
+        </div>
+        <div class="form-field">
+          <input type="email" id="contact-email" placeholder="EMAIL" required autocomplete="email" />
+        </div>
+        <div class="form-field">
+          <textarea id="contact-message" placeholder="MESSAGE" rows="5" required></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">SEND &nbsp;&#8594;</button>
+        <p class="form-status hidden" id="form-status"></p>
+      </form>
+
       <div class="contact-direct">
-        <p>DM ON INSTAGRAM: <a href="https://www.instagram.com/falkor_ae/" target="_blank" rel="noopener">@FALKOR_AE</a></p>
+        <p>OR DM ON INSTAGRAM: <a href="https://www.instagram.com/falkor_ae/" target="_blank" rel="noopener">@FALKOR_AE</a></p>
       </div>
     </div>
   </main>
@@ -58,13 +72,43 @@
       document.getElementById('mobile-nav').classList.add('hidden');
     });
 
-    function submitForm(e) {
+    async function submitForm(e) {
       e.preventDefault();
+      const btn    = document.getElementById('submit-btn');
       const status = document.getElementById('form-status');
-      status.textContent = 'MESSAGE SENT.';
+
+      const name    = document.getElementById('contact-name').value.trim();
+      const email   = document.getElementById('contact-email').value.trim();
+      const message = document.getElementById('contact-message').value.trim();
+
+      btn.disabled   = true;
+      btn.textContent = 'SENDING…';
+      status.classList.add('hidden');
+
+      try {
+        const res  = await fetch('/api/contact', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ name, email, message }),
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          status.textContent = 'MESSAGE SENT.';
+          status.style.color = '';
+          e.target.reset();
+        } else {
+          status.textContent = data.error || 'SOMETHING WENT WRONG. PLEASE TRY AGAIN.';
+          status.style.color = '#ff6b6b';
+        }
+      } catch {
+        status.textContent = 'NETWORK ERROR. PLEASE TRY AGAIN.';
+        status.style.color = '#ff6b6b';
+      }
+
       status.classList.remove('hidden');
-      e.target.reset();
-      setTimeout(() => status.classList.add('hidden'), 4000);
+      btn.disabled    = false;
+      btn.textContent = 'SEND  →';
     }
   </script>
 </body>

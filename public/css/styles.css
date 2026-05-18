@@ -271,114 +271,99 @@ input, textarea, select { font-family: var(--font); }
 /* ─── INNER PAGE ───────────────────────────────────────────── */
 .inner-page body { overflow-y: auto; }
 
-/* ─── PORTFOLIO PAGE ───────────────────────────────────────── */
-#chapters-view {
-  padding-top: 80px;
-  padding-bottom: 80px;
+/* ─── CAROUSEL (coverflow — stage 1) ───────────────────────── */
+#chapters-carousel-view {
   min-height: 100vh;
-}
-
-#chapters-grid {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 80px 0;
+  overflow: hidden;
 }
 
-/* ── Portrait trio row (every group of 3 chapters) ── */
-.chapter-row-portrait {
-  display: flex;
-  flex-direction: row;
-  gap: 2px;
-}
-
-.chapter-row-portrait .chapter-tile {
-  flex: 1;
-  aspect-ratio: 2 / 3;
-}
-
-/* ── Landscape row (1 or 2 leftover chapters) ── */
-.chapter-row-landscape {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.chapter-row-landscape .chapter-tile {
+.chapters-swiper {
   width: 100%;
-  height: 52vw;
-  max-height: 68vh;
+  overflow: visible !important; /* side cards bleed outside container */
+  padding: 40px 0;
 }
 
-/* ── Shared tile styles ── */
-.chapter-tile {
+.swiper-slide {
+  width: 260px;              /* fixed portrait width */
+  aspect-ratio: 3 / 4;
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background: #0a0a0a;
+  background: #111;
+  border-radius: 2px;
 }
 
-.chapter-tile img {
+.swiper-slide img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.6s ease;
+  display: block;
+  pointer-events: none;
+  user-select: none;
 }
 
-.chapter-tile:hover img { transform: scale(1.03); }
-
-.chapter-tile-overlay {
+/* Dim non-active slides via overlay */
+.slide-overlay {
   position: absolute;
   inset: 0;
+  background: rgba(0,0,0,0.42);
+  transition: background 0.4s ease;
+}
+
+.swiper-slide-active .slide-overlay {
   background: rgba(0,0,0,0);
-  transition: background 0.3s;
 }
 
-.chapter-tile:hover .chapter-tile-overlay { background: rgba(0,0,0,0.18); }
-
-.chapter-tile-label {
+/* Chapter name — only fully visible on active slide */
+.slide-label {
   position: absolute;
-  bottom: 24px;
-  left: 28px;
-  font-size: 13px;
-  font-weight: 300;
-  letter-spacing: 0.3em;
-  color: var(--white);
-}
-
-/* Smaller label in portrait tiles to avoid overflow */
-.chapter-row-portrait .chapter-tile-label {
+  bottom: 22px;
+  left: 22px;
+  right: 22px;
   font-size: 11px;
-  left: 16px;
-  bottom: 20px;
-  letter-spacing: 0.2em;
-}
-
-.chapter-tile-count {
-  position: absolute;
-  bottom: 24px;
-  right: 28px;
-  font-size: 9px;
   font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--white-40);
+  letter-spacing: 0.35em;
+  color: var(--white);
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
 
-.chapter-row-portrait .chapter-tile-count {
-  right: 16px;
-  bottom: 20px;
-  font-size: 8px;
-}
+.swiper-slide-active .slide-label { opacity: 1; }
 
-.chapter-empty {
-  position: absolute;
-  inset: 0;
+.slide-empty {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.25em;
   color: var(--white-30);
+}
+
+/* Swiper nav arrow overrides */
+.chapters-swiper .swiper-button-prev,
+.chapters-swiper .swiper-button-next {
+  color: var(--white-40);
+  transition: color 0.2s;
+}
+
+.chapters-swiper .swiper-button-prev:hover,
+.chapters-swiper .swiper-button-next:hover {
+  color: var(--white);
+}
+
+.chapters-swiper .swiper-button-prev::after,
+.chapters-swiper .swiper-button-next::after {
+  font-size: 18px;
 }
 
 #no-images-notice {
@@ -395,6 +380,60 @@ input, textarea, select { font-family: var(--font); }
   line-height: 2.5;
   color: var(--white-40);
 }
+
+/* ─── IMAGE GRID (stage 2) ──────────────────────────────────── */
+#chapter-grid-view {
+  min-height: 100vh;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+#chapter-grid-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 40px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+
+#grid-back-btn {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: var(--white-60);
+  transition: color 0.2s;
+}
+
+#grid-back-btn:hover { color: var(--white); }
+
+#grid-chapter-title {
+  font-size: 11px;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--white-60);
+}
+
+#chapter-image-grid {
+  columns: 3;
+  column-gap: 3px;
+  padding: 0 3px;
+}
+
+#chapter-image-grid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 3px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+#chapter-image-grid img:hover { opacity: 0.82; }
 
 /* ─── CHAPTER VIEWER ───────────────────────────────────────── */
 #chapter-view {
@@ -714,10 +753,12 @@ input, textarea, select { font-family: var(--font); }
   .hamburger { display: block; }
   #footer { padding: 16px 24px; }
 
-  .chapter-row-landscape .chapter-tile { height: 75vw; max-height: none; }
-  .chapter-row-portrait { gap: 1px; }
-  .chapter-tile-label { left: 10px; bottom: 14px; font-size: 9px; letter-spacing: 0.15em; }
-  .chapter-tile-count { right: 10px; bottom: 14px; font-size: 7px; }
+  /* Carousel */
+  .swiper-slide { width: 190px; }
+
+  /* Image grid */
+  #chapter-image-grid { columns: 2; }
+  #chapter-grid-header { padding: 20px 24px; }
 
   #viewer-image-wrap { padding: 70px 20px; }
   #viewer-img { max-height: calc(100vh - 140px); }
