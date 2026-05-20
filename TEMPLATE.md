@@ -1048,4 +1048,3 @@ before first deploy.
 
 ---
 
-*Built with Claude Code · May 2026*
