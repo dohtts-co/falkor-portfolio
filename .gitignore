@@ -7,7 +7,10 @@ node_modules/
 # Admin-uploaded images (stored on Cloudinary in production)
 uploads/
 
-# Database file — production copy lives on Railway Volume, not in the repo
-# The repo's data.json is only used as a seed / local dev copy.
-# Remove the line below if you want to commit the initial seed data.
+# Database file — production data lives in Supabase, not in the repo.
+# The committed data.json is the local dev copy and the seed for `npm run seed`.
+# Uncomment to stop tracking it.
 # data.json
+
+# Vercel CLI
+.vercel

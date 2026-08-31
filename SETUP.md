@@ -35,13 +35,18 @@ Default login:
 
 ## Project structure
 ```
-server.js          — backend server
-database.js        — SQLite setup + default data
+server.js          — Express app (listens locally, exported for Vercel)
+database.js        — data store: Supabase in production, data.json locally
+api/index.js       — Vercel serverless entry point
+vercel.json        — static root + rewrites
+supabase/schema.sql— run once in the Supabase SQL editor
+scripts/
+  seed-supabase.js — push data.json into Supabase (npm run seed)
 routes/
   auth.js          — login/logout
-  api.js           — public image/chapter API
+  api.js           — public image/chapter API + contact form
   admin.js         — protected upload/manage
-public/
+public/            — everything served statically (the Vercel output dir)
   index.html       — homepage (entry screen)
   portfolio.html   — chapter grid + viewer
   about.html       — about page
@@ -51,6 +56,10 @@ public/
   css/admin.css    — admin styles
   js/portfolio.js  — gallery logic
   js/admin.js      — admin logic
-uploads/           — uploaded images (auto-created)
-portfolio.db       — SQLite database (auto-created)
+  photos/          — committed portfolio photos
+uploads/           — local-disk uploads, dev only (auto-created)
+data.json          — local data store, also the seed for Supabase
 ```
+
+## Deployment
+See [DEPLOY.md](DEPLOY.md) — Vercel + Supabase, both free forever.

@@ -2,10 +2,32 @@ const fs   = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-// ── Path ──────────────────────────────────────────────────────────────────────
+// ── Storage mode ──────────────────────────────────────────────────────────────
+// Supabase  — production. Serverless hosts have no writable disk, so the whole
+//             document lives in one JSONB row and is cached in memory per
+//             instance. Reads stay synchronous; writes are flushed by the
+//             server before the response goes out.
+// Local file — dev fallback, used whenever the Supabase vars are absent.
+const useSupabase = !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+const TABLE  = 'portfolio_state';
+const ROW_ID = 1;
+const CACHE_TTL_MS = 5000;   // re-read the row if the cache is older than this
+
+let supabase = null;
+if (useSupabase) {
+  const { createClient } = require('@supabase/supabase-js');
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+// ── Path (file mode only) ─────────────────────────────────────────────────────
 const DB_PATH = process.env.DATA_PATH || path.join(__dirname, 'data.json');
-const dbDir   = path.dirname(DB_PATH);
-if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+if (!useSupabase) {
+  const dbDir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+}
 
 // ── Seed data ─────────────────────────────────────────────────────────────────
 const DEFAULT_DATA = {
@@ -25,48 +47,108 @@ const DEFAULT_DATA = {
   _next_chapter_id: 4,
 };
 
-let data;
+let data      = null;
+let loadedAt  = 0;
+let pending   = Promise.resolve();   // queued Supabase writes
 
-function load() {
+// ── Loading ───────────────────────────────────────────────────────────────────
+function loadFromFile() {
   if (fs.existsSync(DB_PATH)) {
     try {
-      data = JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
-      migrate();
-      return;
+      return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
     } catch (e) {
       console.error('[db] Failed to parse data file, using defaults:', e.message);
     }
   }
-  data = JSON.parse(JSON.stringify(DEFAULT_DATA));
-  save();
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
 }
 
-// Forward-compatible migrations — safe to run on every load
+async function loadFromSupabase() {
+  const { data: row, error } = await supabase
+    .from(TABLE)
+    .select('data')
+    .eq('id', ROW_ID)
+    .maybeSingle();
+
+  if (error) throw new Error(`Supabase read failed: ${error.message}`);
+  if (row?.data) return row.data;
+
+  // First boot against an empty table — write the seed so the row exists.
+  const seed = JSON.parse(JSON.stringify(DEFAULT_DATA));
+  const { error: seedErr } = await supabase
+    .from(TABLE)
+    .upsert({ id: ROW_ID, data: seed, updated_at: new Date().toISOString() });
+  if (seedErr) throw new Error(`Supabase seed failed: ${seedErr.message}`);
+  console.log('[db] Seeded an empty portfolio_state row');
+  return seed;
+}
+
+// Ensure `data` is populated. `fresh` skips the cache — used for writes so we
+// never overwrite the row with a stale document.
+async function ready({ fresh = false } = {}) {
+  if (data && !fresh && Date.now() - loadedAt < CACHE_TTL_MS) return;
+  if (data && !useSupabase && !fresh) return;
+
+  data     = useSupabase ? await loadFromSupabase() : loadFromFile();
+  loadedAt = Date.now();
+  if (migrate()) save();
+}
+
+// Forward-compatible migrations — safe to run on every load.
+// Returns true when something actually changed, so a clean load costs no write.
 function migrate() {
-  // Add _next_chapter_id if missing (older data.json)
+  let changed = false;
+
   if (!data._next_chapter_id) {
     const maxId = data.chapters.length ? Math.max(...data.chapters.map(c => c.id)) : 0;
     data._next_chapter_id = maxId + 1;
+    changed = true;
   }
-  // Add chapter_hero_image_id to existing chapters that don't have it
   data.chapters.forEach(ch => {
-    if (ch.chapter_hero_image_id === undefined) ch.chapter_hero_image_id = null;
+    if (ch.chapter_hero_image_id === undefined) { ch.chapter_hero_image_id = null; changed = true; }
   });
-  // Add cloudinary_public_id to existing images that don't have it
   data.images.forEach(img => {
-    if (img.cloudinary_public_id === undefined) img.cloudinary_public_id = null;
+    if (img.cloudinary_public_id === undefined) { img.cloudinary_public_id = null; changed = true; }
   });
-  save();
+
+  return changed;
 }
 
+// ── Saving ────────────────────────────────────────────────────────────────────
+// Synchronous by contract so every route keeps its current shape. In Supabase
+// mode the write is queued and awaited later by flush().
 function save() {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
+  if (!useSupabase) {
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf8');
+    return;
+  }
+
+  const snapshot = JSON.parse(JSON.stringify(data));
+  loadedAt = Date.now();
+  pending  = pending.then(async () => {
+    const { error } = await supabase
+      .from(TABLE)
+      .upsert({ id: ROW_ID, data: snapshot, updated_at: new Date().toISOString() });
+    if (error) throw new Error(`Supabase write failed: ${error.message}`);
+  });
 }
 
-load();
+// Wait for queued writes to land. Rejects if any of them failed.
+async function flush() {
+  const inFlight = pending;
+  try {
+    await inFlight;
+  } finally {
+    if (pending === inFlight) pending = Promise.resolve();
+  }
+}
 
 // ── Public API ────────────────────────────────────────────────────────────────
 const db = {
+
+  mode: useSupabase ? 'supabase' : 'file',
+  ready,
+  flush,
 
   // ── Chapters ──────────────────────────────────────────────────────────────
   getChapters() {

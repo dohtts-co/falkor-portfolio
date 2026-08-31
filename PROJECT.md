@@ -191,23 +191,25 @@ No SQLite, no React, no build step. The JSON database was chosen specifically to
 
 ## Deploying Live
 
-GitHub alone does not host the site — it only stores the code. You need a platform that can run Node.js.
+GitHub alone does not host the site — it only stores the code.
 
-**Recommended: Railway (railway.app)**
-1. Push code to a GitHub repository (private recommended)
-2. Sign in to Railway with GitHub
-3. New Project → Deploy from GitHub repo → select your repo
-4. Railway detects Node.js automatically and runs `npm start`
-5. You get a public URL instantly
+**Live stack: Vercel + Supabase**, both on permanent free tiers. Full
+step-by-step in [DEPLOY.md](DEPLOY.md).
 
-**Before pushing to GitHub, create a `.gitignore`:**
-```
-node_modules/
-uploads/
-.env
-```
+1. Supabase holds the data (chapters, images, settings, admin login) as a single
+   JSONB row — serverless hosts have no persistent disk, so `data.json` can't
+   live on the filesystem in production.
+2. Vercel serves `public/` (pages plus all committed photos) from its CDN and
+   runs the Express app as one serverless function for `/api`, `/auth` and
+   `/admin/api`.
+3. Pushing to `main` redeploys automatically.
 
-> Note: the `uploads/` folder (admin-uploaded images) will not persist across Railway redeploys. The `photos/` folder is committed to the repo so those are always safe.
+Locally nothing changes: with `SUPABASE_URL` unset the app reads and writes
+`data.json` on disk exactly as before.
+
+> Admin-uploaded images go to Cloudinary, so they survive redeploys. The
+> `public/photos/` folder is committed to the repo, so those are always safe.
+> The `uploads/` folder is local-dev only.
 
 ---
 

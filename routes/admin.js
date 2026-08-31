@@ -35,8 +35,9 @@ if (useCloudinary) {
   console.log('[upload] Storage: local disk 💾');
 }
 
+// Only touched in local-disk mode — a serverless filesystem is read-only.
 const uploadDir = path.join(__dirname, '..', 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!useCloudinary && !fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const localDiskStorage = multer.diskStorage({
   destination: uploadDir,
@@ -186,8 +187,10 @@ router.delete('/images/:id', async (req, res) => {
     }
   }
 
+  // Local-disk images only; on a read-only serverless filesystem this no-ops.
   if (!image.filename.startsWith('http')) {
-    const filePath = path.join(__dirname, '..', image.filename);
+    const base     = image.filename.startsWith('uploads/') ? '..' : '../public';
+    const filePath = path.join(__dirname, base, image.filename);
     if (fs.existsSync(filePath)) try { fs.unlinkSync(filePath); } catch {}
   }
 
